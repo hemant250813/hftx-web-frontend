@@ -1,0 +1,135 @@
+.form {
+  display: grid;
+  gap: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 10px;
+}
+
+.field span {
+  color: var(--soft);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.03);
+  color: var(--foreground);
+  padding: 16px 18px;
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgb(180 199 212 / 0.6);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgb(29 211 176 / 0.16);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 160px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.primaryActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.submit {
+  min-height: 50px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #04131c;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+
+.whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 0 22px;
+  border: 1px solid rgb(32 216 137 / 0.34);
+  border-radius: 999px;
+  background: rgb(32 216 137 / 0.12);
+  color: #9cf2c9;
+  font-weight: 700;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.whatsapp:hover {
+  transform: translateY(-2px);
+  border-color: rgb(32 216 137 / 0.6);
+  background: rgb(32 216 137 / 0.18);
+}
+
+.submit:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.note,
+.status {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.status {
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgb(255 255 255 / 0.03);
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
