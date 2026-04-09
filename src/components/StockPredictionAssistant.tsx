@@ -39,6 +39,11 @@ type InsightResponse = {
   };
 };
 
+type FollowUpEntry = {
+  question: string;
+  answer: string;
+};
+
 const horizons = [
   { value: "5m", label: "5 Minutes" },
   { value: "15m", label: "15 Minutes" },
@@ -77,7 +82,10 @@ export default function StockPredictionAssistant() {
   const [error, setError] = useState("");
   const [symbolOptions, setSymbolOptions] = useState<string[]>([]);
   const [symbolStatus, setSymbolStatus] = useState("Loading COMEX symbols...");
+  const [followUpQuestion, setFollowUpQuestion] = useState("");
+  const [followUps, setFollowUps] = useState<FollowUpEntry[]>([]);
   const [isPending, startTransition] = useTransition();
+  const [isFollowUpPending, startFollowUpTransition] = useTransition();
 
   useEffect(() => {
     let isMounted = true;
@@ -156,12 +164,73 @@ export default function StockPredictionAssistant() {
         }
 
         setResult(payload);
+        setFollowUps([]);
+        setFollowUpQuestion("");
       } catch (submissionError) {
         setResult(null);
         setError(
           submissionError instanceof Error
             ? submissionError.message
             : "Something went wrong while generating the analysis.",
+        );
+      }
+    });
+  };
+
+  const handleFollowUpSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!result || !followUpQuestion.trim()) {
+      return;
+    }
+
+    const question = followUpQuestion.trim();
+    setError("");
+
+    startFollowUpTransition(async () => {
+      try {
+        const response = await fetch("/api/stock-assistant", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            symbol: result.symbol,
+            currency: result.currency,
+            horizon: form.horizon,
+            tradingStyle: form.tradingStyle,
+            investmentAmount: form.investmentAmount,
+            question: form.question,
+            followUpQuestion: question,
+            context: {
+              summary: result.summary,
+              tradePlan: result.tradePlan,
+            },
+          }),
+        });
+
+        const payload = (await response.json()) as {
+          followUpAnswer?: string;
+          message?: string;
+        };
+
+        if (!response.ok) {
+          throw new Error(payload.message || "Unable to continue the chat.");
+        }
+
+        setFollowUps((current) => [
+          ...current,
+          {
+            question,
+            answer: payload.followUpAnswer || "No follow-up answer returned.",
+          },
+        ]);
+        setFollowUpQuestion("");
+      } catch (followUpError) {
+        setError(
+          followUpError instanceof Error
+            ? followUpError.message
+            : "Something went wrong while continuing the chat.",
         );
       }
     });
@@ -345,6 +414,41 @@ export default function StockPredictionAssistant() {
                     <strong>Sources:</strong> {result.dataSource} via{" "}
                     {result.generatedWith}
                   </p>
+                </div>
+
+                <div className={styles.followUpSection}>
+                  <div className={styles.followUpHeader}>
+                    <h4>Continue Chat</h4>
+                    <span>Ask more about this setup</span>
+                  </div>
+
+                  {followUps.length ? (
+                    <div className={styles.followUpThread}>
+                      {followUps.map((item, index) => (
+                        <div className={styles.followUpItem} key={`${item.question}-${index}`}>
+                          <p className={styles.followUpQuestion}>{item.question}</p>
+                          <p className={styles.followUpAnswer}>{item.answer}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <form className={styles.followUpForm} onSubmit={handleFollowUpSubmit}>
+                    <textarea
+                      className={styles.followUpTextarea}
+                      placeholder="Ask about entry refinement, stop-loss placement, breakout confirmation, or risk sizing..."
+                      rows={3}
+                      value={followUpQuestion}
+                      onChange={(event) => setFollowUpQuestion(event.target.value)}
+                    />
+                    <button
+                      className={styles.followUpButton}
+                      disabled={isFollowUpPending}
+                      type="submit"
+                    >
+                      {isFollowUpPending ? "Replying..." : "Ask Follow-Up"}
+                    </button>
+                  </form>
                 </div>
               </div>
             ) : null}

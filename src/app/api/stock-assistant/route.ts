@@ -19,6 +19,18 @@ type RequestBody = {
   tradingStyle?: string;
   investmentAmount?: string;
   question?: string;
+  followUpQuestion?: string;
+  context?: {
+    summary?: string;
+    tradePlan?: {
+      direction?: string;
+      entry?: number;
+      stopLoss?: number;
+      breakEven?: number;
+      tp1?: number;
+      tp2?: number;
+    };
+  };
   currency?: "USD" | "EUR" | "GBP" | "INR" | "AED";
 };
 
@@ -51,6 +63,7 @@ export async function POST(request: Request) {
     const tradingStyle = body.tradingStyle?.trim() || "Long-term investment";
     const investmentAmount = body.investmentAmount?.trim() || "Not provided";
     const question = body.question?.trim() || "What is the probability of this stock increasing?";
+    const followUpQuestion = body.followUpQuestion?.trim() || "";
     const currency = body.currency || "USD";
 
     const marketData = await fetchMarketSeries(symbol);
@@ -126,6 +139,29 @@ export async function POST(request: Request) {
     const resolvedDataSource = `${marketData.dataSource}${
       currency !== "USD" ? `, converted to ${currency}` : ""
     }`;
+
+    if (followUpQuestion) {
+      const followUpAnswer = await generateFollowUpAnswer({
+        symbol,
+        companyName: marketData.companyName,
+        horizonLabel: horizonConfig[horizon].label,
+        tradingStyle,
+        currency,
+        currentPrice: convertedCurrentPrice,
+        projectedPrice: convertedProjectedPrice,
+        summary: body.context?.summary || analysis.summary,
+        tradePlan,
+        followUpQuestion,
+        outlook,
+        probabilityUp,
+        confidence,
+      });
+
+      return Response.json({
+        followUpAnswer,
+        generatedWith: analysis.generatedWith,
+      });
+    }
 
     return Response.json({
       symbol,
@@ -447,6 +483,51 @@ async function generateAnalysis(input: {
       : input.reasons.whyDecrease,
     generatedWith: model,
   };
+}
+
+async function generateFollowUpAnswer(input: {
+  symbol: string;
+  companyName: string;
+  horizonLabel: string;
+  tradingStyle: string;
+  currency: string;
+  currentPrice: number;
+  projectedPrice: number;
+  summary: string;
+  tradePlan: ReturnType<typeof buildTradePlan>;
+  followUpQuestion: string;
+  outlook: "Bullish" | "Bearish" | "Neutral";
+  probabilityUp: number;
+  confidence: number;
+}) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+
+  if (!apiKey) {
+    return `${input.symbol} follow-up: ${input.followUpQuestion}. Current bias is ${input.outlook.toLowerCase()} with ${input.probabilityUp}% upside probability and ${input.confidence}% confidence. The active plan uses entry near ${input.currency} ${input.tradePlan.entry.toFixed(2)}, stop-loss near ${input.currency} ${input.tradePlan.stopLoss.toFixed(2)}, and targets near ${input.currency} ${input.tradePlan.tp1.toFixed(2)} / ${input.currency} ${input.tradePlan.tp2.toFixed(2)}.`;
+  }
+
+  const client = new OpenAI({ apiKey });
+  const completion = await client.chat.completions.create({
+    model,
+    temperature: 0.45,
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a trading assistant continuing a conversation about an existing market setup. Give concise practical answers, grounded in the provided setup. Do not promise outcomes.",
+      },
+      {
+        role: "user",
+        content: JSON.stringify(input),
+      },
+    ],
+  });
+
+  return (
+    completion.choices[0]?.message?.content ||
+    `${input.symbol} remains ${input.outlook.toLowerCase()} on the current setup.`
+  );
 }
 
 function clamp(value: number, min: number, max: number) {
