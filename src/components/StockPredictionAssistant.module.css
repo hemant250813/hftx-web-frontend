@@ -1,0 +1,583 @@
+.shell {
+  padding: 28px clamp(20px, 4vw, 64px) 88px;
+  background:
+    radial-gradient(circle at top right, rgb(29 211 176 / 0.12), transparent 28%),
+    radial-gradient(circle at left center, rgb(90 168 255 / 0.12), transparent 32%);
+}
+
+.heading {
+  max-width: 860px;
+}
+
+.eyebrow,
+.chatHeader,
+.responseLabel,
+.stat span,
+.chartMeta,
+.field span {
+  font-family: var(--font-mono), monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 0.82rem;
+}
+
+.heading h2 {
+  margin-top: 16px;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(2.4rem, 4vw, 4.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.heading p {
+  margin-top: 18px;
+  max-width: 760px;
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 1.02rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(340px, 0.7fr);
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.chatCard,
+.formCard {
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgb(9 21 32 / 94%), rgb(5 12 20 / 96%));
+  box-shadow: 0 18px 70px rgb(2 8 14 / 38%);
+}
+
+.chatCard {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+}
+
+.chatCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0%, rgb(255 255 255 / 0.03) 42%, transparent 62%);
+  transform: translateX(-120%);
+  animation: shine 7s linear infinite;
+  pointer-events: none;
+}
+
+.chatHeader {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.messages {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.assistantMessage,
+.userPrompt,
+.responseCard,
+.error {
+  border-radius: 22px;
+}
+
+.assistantMessage {
+  max-width: 78%;
+  padding: 16px 18px;
+  background: rgb(255 255 255 / 0.04);
+  color: var(--soft);
+  line-height: 1.75;
+}
+
+.userPrompt {
+  justify-self: end;
+  max-width: 82%;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgb(29 211 176 / 0.2), rgb(90 168 255 / 0.18));
+  line-height: 1.75;
+}
+
+.responseCard {
+  padding: 20px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.03);
+}
+
+.responseTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.responseTop h3 {
+  margin-top: 8px;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 2rem;
+}
+
+.responseLabel {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.outlookTag {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgb(29 211 176 / 0.14);
+  color: #9df2e1;
+  font-weight: 700;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.stat {
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgb(255 255 255 / 0.06);
+  background: rgb(255 255 255 / 0.03);
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 0.64rem;
+}
+
+.stat strong {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.15rem;
+}
+
+.chartWrap {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgb(255 255 255 / 0.06);
+  background: #07131e;
+}
+
+.chartMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.chart {
+  width: 100%;
+  height: 230px;
+  margin-top: 10px;
+}
+
+.gridLine,
+.divider {
+  stroke: rgb(255 255 255 / 0.12);
+  stroke-width: 0.4;
+}
+
+.divider {
+  stroke-dasharray: 2 2;
+}
+
+.historyPath,
+.forecastPath {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.historyPath {
+  stroke: #5aa8ff;
+}
+
+.forecastPath {
+  stroke: url(#forecastStroke);
+  stroke-dasharray: 1.6 1.1;
+}
+
+.summary {
+  margin-top: 18px;
+  color: var(--soft);
+  line-height: 1.8;
+}
+
+.driverList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.driverList span {
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  color: var(--soft);
+  font-size: 0.9rem;
+}
+
+.analysisGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.analysisCard {
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgb(255 255 255 / 0.06);
+  background: rgb(255 255 255 / 0.03);
+}
+
+.analysisTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.analysisNumbers {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.analysisNumbers strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.15rem;
+}
+
+.analysisNumbers span {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.probabilityTrack,
+.rangeTrack,
+.scenarioTrack {
+  position: relative;
+  width: 100%;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.probabilityTrack {
+  height: 12px;
+  margin-top: 18px;
+  overflow: hidden;
+}
+
+.probabilityFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1dd3b0, #ffe57d);
+}
+
+.rangeTrack {
+  height: 14px;
+  margin-top: 18px;
+}
+
+.rangeMarker,
+.rangeMarkerProjected {
+  position: absolute;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.rangeMarker {
+  background: #5aa8ff;
+  box-shadow: 0 0 0 4px rgb(90 168 255 / 0.18);
+}
+
+.rangeMarkerProjected {
+  background: #1dd3b0;
+  box-shadow: 0 0 0 4px rgb(29 211 176 / 0.18);
+}
+
+.scenarioBars {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.scenarioRow {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 12px;
+  align-items: center;
+  color: var(--soft);
+  font-size: 0.9rem;
+}
+
+.scenarioTrack {
+  height: 12px;
+  overflow: hidden;
+}
+
+.bullBar,
+.bearBar {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.bullBar {
+  background: linear-gradient(90deg, #1dd3b0, #9df2e1);
+}
+
+.bearBar {
+  background: linear-gradient(90deg, #ff9e67, #e56052);
+}
+
+.momentumBars {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  align-items: end;
+  gap: 8px;
+  height: 92px;
+  margin-top: 18px;
+}
+
+.momentumUp,
+.momentumDown {
+  border-radius: 999px 999px 4px 4px;
+}
+
+.momentumUp {
+  background: linear-gradient(180deg, #1dd3b0, rgb(29 211 176 / 0.18));
+}
+
+.momentumDown {
+  background: linear-gradient(180deg, #ff9e67, rgb(229 96 82 / 0.18));
+}
+
+.reasonGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.reasonCard {
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgb(255 255 255 / 0.06);
+  background: rgb(255 255 255 / 0.03);
+}
+
+.reasonCard h4 {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1rem;
+}
+
+.reasonCard ul {
+  margin-top: 12px;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.notes {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.error {
+  padding: 14px 16px;
+  border: 1px solid rgb(229 96 82 / 0.3);
+  background: rgb(229 96 82 / 0.12);
+  color: #ffd7d2;
+}
+
+.formCard {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  align-content: start;
+}
+
+.topSelectors {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 10px;
+}
+
+.field span {
+  color: var(--soft);
+  font-size: 0.72rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgb(6 16 24 / 0.96), rgb(10 22 33 / 0.98));
+  color: #f4fbff;
+  padding: 16px 18px;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.03);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgb(184 202 214 / 0.54);
+}
+
+.field select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #9df2e1 50%),
+    linear-gradient(135deg, #9df2e1 50%, transparent 50%),
+    linear-gradient(180deg, rgb(6 16 24 / 0.96), rgb(10 22 33 / 0.98));
+  background-position:
+    calc(100% - 22px) calc(50% - 2px),
+    calc(100% - 16px) calc(50% - 2px),
+    0 0;
+  background-size:
+    6px 6px,
+    6px 6px,
+    100% 100%;
+  background-repeat: no-repeat;
+  padding-right: 44px;
+}
+
+.field select:required:invalid {
+  color: rgb(184 202 214 / 0.62);
+}
+
+.field select option {
+  background: #09141d;
+  color: #f4fbff;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: rgb(29 211 176 / 0.72);
+  box-shadow:
+    0 0 0 4px rgb(29 211 176 / 0.12),
+    inset 0 1px 0 rgb(255 255 255 / 0.03);
+}
+
+.quickActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.feedNote {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 0.92rem;
+}
+
+.quickChip {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.03);
+  color: var(--soft);
+  cursor: pointer;
+}
+
+.submit {
+  min-height: 52px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #04131c;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (max-width: 1080px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .shell {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .formGrid,
+  .statGrid,
+  .analysisGrid,
+  .reasonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .assistantMessage,
+  .userPrompt {
+    max-width: 100%;
+  }
+
+  .responseTop,
+  .chartMeta,
+  .chatHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

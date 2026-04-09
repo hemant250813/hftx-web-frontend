@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import ContactForm from "@/components/ContactForm";
+import StockPredictionAssistant from "@/components/StockPredictionAssistant";
 import styles from "./page.module.css";
 
 const whatsappMessage =
@@ -171,8 +172,11 @@ export default function Home() {
               experiences, and software teams for modern businesses.
             </p>
 
-            <div className={styles.heroActions}>
-              <a className={styles.primaryButton} href="#contact">
+          <div className={styles.heroActions}>
+              <a className={styles.primaryButton} href="#assistant">
+                Try AI Assistant
+              </a>
+              <a className={styles.secondaryButton} href="#contact">
                 Start a Project
               </a>
               <a className={styles.secondaryButton} href="#services">
@@ -210,6 +214,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <StockPredictionAssistant />
 
       <section className={styles.tickerSection} aria-label="Live market style ticker">
         <div className={styles.tickerTrack}>
