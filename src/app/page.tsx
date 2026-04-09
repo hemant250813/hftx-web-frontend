@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import ContactForm from "@/components/ContactForm";
+import SignalSubscription from "@/components/SignalSubscription";
 import StockPredictionAssistant from "@/components/StockPredictionAssistant";
 import styles from "./page.module.css";
 
@@ -216,6 +217,7 @@ export default function Home() {
       </section>
 
       <StockPredictionAssistant />
+      <SignalSubscription />
 
       <section className={styles.tickerSection} aria-label="Live market style ticker">
         <div className={styles.tickerTrack}>

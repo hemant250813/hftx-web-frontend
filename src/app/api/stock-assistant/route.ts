@@ -17,6 +17,8 @@ type RequestBody = {
     | "90d"
     | "180d";
   tradingStyle?: string;
+  sizingMode?: "lot" | "amount";
+  lotSize?: string;
   investmentAmount?: string;
   question?: string;
   followUpQuestion?: string;
@@ -61,6 +63,8 @@ export async function POST(request: Request) {
 
     const horizon = body.horizon && body.horizon in horizonConfig ? body.horizon : "30d";
     const tradingStyle = body.tradingStyle?.trim() || "Long-term investment";
+    const sizingMode = body.sizingMode === "amount" ? "amount" : "lot";
+    const lotSize = Number(body.lotSize || "1");
     const investmentAmount = body.investmentAmount?.trim() || "Not provided";
     const question = body.question?.trim() || "What is the probability of this stock increasing?";
     const followUpQuestion = body.followUpQuestion?.trim() || "";
@@ -114,6 +118,9 @@ export async function POST(request: Request) {
       tradingStyle,
       currency,
       probabilityUp,
+      sizingMode,
+      lotSize,
+      investmentAmount,
     });
 
     const analysis = await generateAnalysis({
@@ -582,6 +589,9 @@ function buildTradePlan(input: {
   tradingStyle: string;
   currency: string;
   probabilityUp: number;
+  sizingMode: "lot" | "amount";
+  lotSize: number;
+  investmentAmount: string;
 }) {
   const baseRisk = Math.max(
     input.currentPrice * Math.max(input.volatility, 0.0025) * input.horizonRiskFactor,
@@ -619,6 +629,12 @@ function buildTradePlan(input: {
       ? entry - baseRisk * 0.4
       : entry - baseRisk * 0.25;
 
+  const normalizedLotSize = Number.isFinite(input.lotSize) && input.lotSize > 0 ? input.lotSize : 1;
+  const estimatedAmount =
+    input.sizingMode === "lot"
+      ? roundPrice(input.currentPrice * normalizedLotSize)
+      : roundPrice(Number(input.investmentAmount || "0") || input.currentPrice);
+
   return {
     direction: input.outlook === "Bearish" ? "Sell Bias" : "Buy Bias",
     entry: roundPrice(entry),
@@ -635,6 +651,9 @@ function buildTradePlan(input: {
     riskReward: `${(
       Math.abs(tp2 - entry) / Math.max(Math.abs(entry - stopLoss), 0.0001)
     ).toFixed(2)}R`,
+    sizingMode: input.sizingMode,
+    lotSize: roundPrice(normalizedLotSize),
+    estimatedAmount,
     setupType:
       input.tradingStyle === "Portfolio allocation"
         ? "Staggered allocation setup"

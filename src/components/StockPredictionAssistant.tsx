@@ -34,6 +34,9 @@ type InsightResponse = {
     tp2: number;
     invalidation: string;
     riskReward: string;
+    sizingMode: "lot" | "amount";
+    lotSize: number;
+    estimatedAmount: number;
     setupType: string;
     notes: string;
   };
@@ -71,6 +74,8 @@ const initialForm = {
   currency: "",
   horizon: "",
   tradingStyle: "",
+  sizingMode: "lot",
+  lotSize: "1",
   investmentAmount: "",
   question:
     "What is the probability of this stock increasing, and how should I think about the setup?",
@@ -199,6 +204,8 @@ export default function StockPredictionAssistant() {
             currency: result.currency,
             horizon: form.horizon,
             tradingStyle: form.tradingStyle,
+            sizingMode: form.sizingMode,
+            lotSize: form.lotSize,
             investmentAmount: form.investmentAmount,
             question: form.question,
             followUpQuestion: question,
@@ -267,7 +274,8 @@ export default function StockPredictionAssistant() {
                 I want a forecast for{" "}
                 <strong>{form.symbol || "COMEX instrument"}</strong>, with a{" "}
                 <strong>{form.horizon || "time horizon"}</strong> horizon and{" "}
-                <strong>{form.tradingStyle || "investment style"}</strong>.
+                <strong>{form.tradingStyle || "investment style"}</strong> using{" "}
+                <strong>{form.sizingMode === "lot" ? `${form.lotSize || "1"} lot` : "amount mode"}</strong>.
               </p>
             </div>
 
@@ -349,6 +357,20 @@ export default function StockPredictionAssistant() {
                     <span>Sell Zone</span>
                     <strong>
                       {result.currency} {result.tradePlan.sellZone.toFixed(2)}
+                    </strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>Sizing</span>
+                    <strong>
+                      {result.tradePlan.sizingMode === "lot"
+                        ? `${result.tradePlan.lotSize} lot`
+                        : "Amount"}
+                    </strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>Estimated Size</span>
+                    <strong>
+                      {result.currency} {result.tradePlan.estimatedAmount.toFixed(2)}
                     </strong>
                   </div>
                 </div>
@@ -552,14 +574,32 @@ export default function StockPredictionAssistant() {
             </label>
 
             <label className={styles.field}>
-              <span>Investment Amount</span>
-              <input
-                placeholder="10000"
-                value={form.investmentAmount}
+              <span>Sizing Mode</span>
+              <select
+                value={form.sizingMode}
                 onChange={(event) =>
                   setForm((current) => ({
                     ...current,
-                    investmentAmount: event.target.value,
+                    sizingMode: event.target.value as "lot" | "amount",
+                  }))
+                }
+              >
+                <option value="lot">Lot</option>
+                <option value="amount">Amount</option>
+              </select>
+            </label>
+
+            <label className={styles.field}>
+              <span>{form.sizingMode === "lot" ? "Lot Size" : "Investment Amount"}</span>
+              <input
+                placeholder={form.sizingMode === "lot" ? "1" : "10000"}
+                value={form.sizingMode === "lot" ? form.lotSize : form.investmentAmount}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    ...(current.sizingMode === "lot"
+                      ? { lotSize: event.target.value }
+                      : { investmentAmount: event.target.value }),
                   }))
                 }
               />
