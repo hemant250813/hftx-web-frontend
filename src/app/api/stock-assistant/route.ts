@@ -5,7 +5,17 @@ export const runtime = "nodejs";
 
 type RequestBody = {
   symbol?: string;
-  horizon?: "7d" | "30d" | "90d" | "180d";
+  horizon?:
+    | "5m"
+    | "15m"
+    | "30m"
+    | "1h"
+    | "4h"
+    | "1d"
+    | "7d"
+    | "30d"
+    | "90d"
+    | "180d";
   tradingStyle?: string;
   investmentAmount?: string;
   question?: string;
@@ -13,10 +23,16 @@ type RequestBody = {
 };
 
 const horizonConfig = {
-  "7d": { forecastPoints: 7, label: "7 Days" },
-  "30d": { forecastPoints: 10, label: "30 Days" },
-  "90d": { forecastPoints: 12, label: "90 Days" },
-  "180d": { forecastPoints: 12, label: "180 Days" },
+  "5m": { forecastPoints: 8, label: "5 Minutes", riskFactor: 0.45 },
+  "15m": { forecastPoints: 8, label: "15 Minutes", riskFactor: 0.55 },
+  "30m": { forecastPoints: 8, label: "30 Minutes", riskFactor: 0.65 },
+  "1h": { forecastPoints: 9, label: "1 Hour", riskFactor: 0.78 },
+  "4h": { forecastPoints: 10, label: "4 Hours", riskFactor: 0.92 },
+  "1d": { forecastPoints: 10, label: "1 Day", riskFactor: 1.04 },
+  "7d": { forecastPoints: 7, label: "7 Days", riskFactor: 1.1 },
+  "30d": { forecastPoints: 10, label: "30 Days", riskFactor: 1.18 },
+  "90d": { forecastPoints: 12, label: "90 Days", riskFactor: 1.35 },
+  "180d": { forecastPoints: 12, label: "180 Days", riskFactor: 1.55 },
 } as const;
 
 export async function POST(request: Request) {
@@ -76,6 +92,16 @@ export async function POST(request: Request) {
       horizonLabel: horizonConfig[horizon].label,
       tradingStyle,
     });
+    const tradePlan = buildTradePlan({
+      currentPrice: convertedCurrentPrice,
+      projectedPrice: convertedProjectedPrice,
+      outlook,
+      volatility,
+      horizonRiskFactor: horizonConfig[horizon].riskFactor,
+      tradingStyle,
+      currency,
+      probabilityUp,
+    });
 
     const analysis = await generateAnalysis({
       symbol,
@@ -117,6 +143,7 @@ export async function POST(request: Request) {
       drivers: analysis.drivers,
       whyIncrease: analysis.whyIncrease,
       whyDecrease: analysis.whyDecrease,
+      tradePlan,
       history: convertedHistory,
       forecast: convertedForecast,
       dataSource: resolvedDataSource,
@@ -463,4 +490,83 @@ function buildReasons(input: {
     whyIncrease,
     whyDecrease,
   };
+}
+
+function buildTradePlan(input: {
+  currentPrice: number;
+  projectedPrice: number;
+  outlook: "Bullish" | "Bearish" | "Neutral";
+  volatility: number;
+  horizonRiskFactor: number;
+  tradingStyle: string;
+  currency: string;
+  probabilityUp: number;
+}) {
+  const baseRisk = Math.max(
+    input.currentPrice * Math.max(input.volatility, 0.0025) * input.horizonRiskFactor,
+    input.currentPrice * 0.0025,
+  );
+  const isBullish = input.outlook === "Bullish";
+  const bias = isBullish ? 1 : input.outlook === "Bearish" ? -1 : 0.5;
+
+  const entry =
+    input.outlook === "Neutral"
+      ? input.currentPrice
+      : input.currentPrice - baseRisk * 0.18 * bias;
+  const stopLoss =
+    input.outlook === "Bearish"
+      ? entry + baseRisk
+      : entry - baseRisk;
+  const tp1 =
+    input.outlook === "Bearish"
+      ? entry - baseRisk * 1.15
+      : entry + baseRisk * 1.15;
+  const tp2 =
+    input.outlook === "Bearish"
+      ? entry - baseRisk * 2.05
+      : entry + baseRisk * 2.05;
+  const breakEven =
+    input.outlook === "Bearish"
+      ? entry - baseRisk * 0.72
+      : entry + baseRisk * 0.72;
+  const sellZone =
+    input.outlook === "Bearish"
+      ? entry + baseRisk * 0.25
+      : entry + baseRisk * 1.75;
+  const buyZone =
+    input.outlook === "Bearish"
+      ? entry - baseRisk * 0.4
+      : entry - baseRisk * 0.25;
+
+  return {
+    direction: input.outlook === "Bearish" ? "Sell Bias" : "Buy Bias",
+    entry: roundPrice(entry),
+    buyZone: roundPrice(buyZone),
+    sellZone: roundPrice(sellZone),
+    stopLoss: roundPrice(stopLoss),
+    breakEven: roundPrice(breakEven),
+    tp1: roundPrice(tp1),
+    tp2: roundPrice(tp2),
+    invalidation:
+      input.outlook === "Bearish"
+        ? "Invalidate the setup if price holds above the stop-loss zone with momentum."
+        : "Invalidate the setup if price loses the stop-loss zone and fails to recover quickly.",
+    riskReward: `${(
+      Math.abs(tp2 - entry) / Math.max(Math.abs(entry - stopLoss), 0.0001)
+    ).toFixed(2)}R`,
+    setupType:
+      input.tradingStyle === "Portfolio allocation"
+        ? "Staggered allocation setup"
+        : input.tradingStyle === "Long-term investment"
+          ? "Swing accumulation setup"
+          : "Active trade setup",
+    notes:
+      input.probabilityUp >= 60
+        ? `Bias favors upside continuation. Use ${input.currency} risk sizing carefully.`
+        : "This setup is lower confidence. Consider lighter size and faster risk management.",
+  };
+}
+
+function roundPrice(value: number) {
+  return Number(value.toFixed(2));
 }

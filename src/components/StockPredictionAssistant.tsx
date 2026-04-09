@@ -23,9 +23,29 @@ type InsightResponse = {
   generatedWith: string;
   whyIncrease: string[];
   whyDecrease: string[];
+  tradePlan: {
+    direction: string;
+    entry: number;
+    buyZone: number;
+    sellZone: number;
+    stopLoss: number;
+    breakEven: number;
+    tp1: number;
+    tp2: number;
+    invalidation: string;
+    riskReward: string;
+    setupType: string;
+    notes: string;
+  };
 };
 
 const horizons = [
+  { value: "5m", label: "5 Minutes" },
+  { value: "15m", label: "15 Minutes" },
+  { value: "30m", label: "30 Minutes" },
+  { value: "1h", label: "1 Hour" },
+  { value: "4h", label: "4 Hours" },
+  { value: "1d", label: "1 Day" },
   { value: "7d", label: "7 Days" },
   { value: "30d", label: "30 Days" },
   { value: "90d", label: "90 Days" },
@@ -33,6 +53,8 @@ const horizons = [
 ];
 
 const stylesOfTrading = [
+  "Scalping",
+  "Hedging",
   "Short-term trade",
   "Swing trade",
   "Long-term investment",
@@ -211,6 +233,70 @@ export default function StockPredictionAssistant() {
                       {result.currency} {result.projectedPrice.toFixed(2)}
                     </strong>
                   </div>
+                </div>
+
+                <div className={styles.tradePlanGrid}>
+                  <div className={styles.tradeCard}>
+                    <span>Direction</span>
+                    <strong>{result.tradePlan.direction}</strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>Entry</span>
+                    <strong>
+                      {result.currency} {result.tradePlan.entry.toFixed(2)}
+                    </strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>Stop Loss</span>
+                    <strong>
+                      {result.currency} {result.tradePlan.stopLoss.toFixed(2)}
+                    </strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>Break Even</span>
+                    <strong>
+                      {result.currency} {result.tradePlan.breakEven.toFixed(2)}
+                    </strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>TP1</span>
+                    <strong>
+                      {result.currency} {result.tradePlan.tp1.toFixed(2)}
+                    </strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>TP2</span>
+                    <strong>
+                      {result.currency} {result.tradePlan.tp2.toFixed(2)}
+                    </strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>Buy Zone</span>
+                    <strong>
+                      {result.currency} {result.tradePlan.buyZone.toFixed(2)}
+                    </strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>Sell Zone</span>
+                    <strong>
+                      {result.currency} {result.tradePlan.sellZone.toFixed(2)}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className={styles.tradeMeta}>
+                  <p>
+                    <strong>Setup type:</strong> {result.tradePlan.setupType}
+                  </p>
+                  <p>
+                    <strong>Risk / Reward:</strong> {result.tradePlan.riskReward}
+                  </p>
+                  <p>
+                    <strong>Invalidation:</strong> {result.tradePlan.invalidation}
+                  </p>
+                  <p>
+                    <strong>Notes:</strong> {result.tradePlan.notes}
+                  </p>
                 </div>
 
                 <PredictionChart
