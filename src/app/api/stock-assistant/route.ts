@@ -17,6 +17,7 @@ type RequestBody = {
     | "90d"
     | "180d";
   tradingStyle?: string;
+  positionSide?: "buy" | "sell";
   sizingMode?: "lot" | "amount";
   lotSize?: string;
   investmentAmount?: string;
@@ -34,6 +35,14 @@ type RequestBody = {
     };
   };
   currency?: "USD" | "EUR" | "GBP" | "INR" | "AED";
+};
+
+type NewsItem = {
+  title: string;
+  publishedAt: string;
+  source: string;
+  url?: string;
+  summary: string;
 };
 
 const horizonConfig = {
@@ -63,6 +72,7 @@ export async function POST(request: Request) {
 
     const horizon = body.horizon && body.horizon in horizonConfig ? body.horizon : "30d";
     const tradingStyle = body.tradingStyle?.trim() || "Long-term investment";
+    const positionSide = body.positionSide === "sell" ? "sell" : "buy";
     const sizingMode = body.sizingMode === "amount" ? "amount" : "lot";
     const lotSize = Number(body.lotSize || "1");
     const investmentAmount = body.investmentAmount?.trim() || "Not provided";
@@ -71,6 +81,7 @@ export async function POST(request: Request) {
     const currency = body.currency || "USD";
 
     const marketData = await fetchMarketSeries(symbol);
+    const newsContext = await fetchRecentNewsContext(symbol);
     const currentPrice = marketData.history[marketData.history.length - 1]?.price ?? 100;
     const momentum =
       (currentPrice - marketData.history[0].price) / Math.max(marketData.history[0].price, 1);
@@ -118,6 +129,7 @@ export async function POST(request: Request) {
       tradingStyle,
       currency,
       probabilityUp,
+      positionSide,
       sizingMode,
       lotSize,
       investmentAmount,
@@ -142,6 +154,7 @@ export async function POST(request: Request) {
       }`,
       reasons,
       currency,
+      newsContext,
     });
     const resolvedDataSource = `${marketData.dataSource}${
       currency !== "USD" ? `, converted to ${currency}` : ""
@@ -162,6 +175,8 @@ export async function POST(request: Request) {
         outlook,
         probabilityUp,
         confidence,
+        newsContext,
+        positionSide,
       });
 
       return Response.json({
@@ -207,8 +222,8 @@ async function fetchMarketSeries(symbol: string) {
   if (socketQuote) {
     return {
       companyName: socketQuote.symbol,
-      history: buildComexHistory(socketQuote),
-      dataSource: "COMEX websocket feed",
+      history: buildComexHistory(socketQuote, 90),
+      dataSource: "COMEX websocket feed with 3-month modeled history",
     };
   }
 
@@ -242,7 +257,7 @@ async function fetchMarketSeries(symbol: string) {
       const series = payload["Time Series (Daily)"];
       if (series) {
         const history = Object.entries(series)
-          .slice(0, 30)
+          .slice(0, 90)
           .reverse()
           .map(([date, values]) => ({
             label: date.slice(5),
@@ -263,7 +278,7 @@ async function fetchMarketSeries(symbol: string) {
           return {
             companyName: payload["Meta Data"]?.["2. Symbol"] || symbol,
             history,
-            dataSource: "Alpha Vantage GLOBAL_QUOTE and TIME_SERIES_DAILY",
+            dataSource: "Alpha Vantage GLOBAL_QUOTE and TIME_SERIES_DAILY (3 months)",
           };
         }
       }
@@ -274,8 +289,8 @@ async function fetchMarketSeries(symbol: string) {
 
   return {
     companyName: symbol,
-    history: buildSyntheticHistory(symbol),
-    dataSource: "Synthetic fallback market data",
+    history: buildSyntheticHistory(symbol, 90),
+    dataSource: "Synthetic fallback market data (3 months modeled history)",
   };
 }
 
@@ -315,14 +330,14 @@ async function fetchConversionRate(fromCurrency: string, toCurrency: string) {
   }
 }
 
-function buildSyntheticHistory(symbol: string): PricePoint[] {
+function buildSyntheticHistory(symbol: string, length = 90): PricePoint[] {
   const base =
     symbol
       .split("")
       .reduce((total, char) => total + char.charCodeAt(0), 0) % 120;
   const start = 80 + base;
 
-  return Array.from({ length: 30 }).map((_, index) => {
+  return Array.from({ length }).map((_, index) => {
     const drift = index * (0.4 + (base % 7) * 0.03);
     const cycle = Math.sin(index / 3.1) * (3 + (base % 9));
     const pulse = Math.cos(index / 2.2) * 2.2;
@@ -404,6 +419,7 @@ async function generateAnalysis(input: {
     whyDecrease: string[];
   };
   currency: string;
+  newsContext: NewsItem[];
 }) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
@@ -417,7 +433,9 @@ async function generateAnalysis(input: {
       drivers: [
         `${input.horizonLabel} horizon selected`,
         `Estimated volatility ${input.volatility.toFixed(3)}`,
-        `Momentum score ${input.momentum.toFixed(3)}`,
+        input.newsContext[0]
+          ? `Recent news: ${input.newsContext[0].title}`
+          : `Momentum score ${input.momentum.toFixed(3)}`,
       ],
       whyIncrease: input.reasons.whyIncrease,
       whyDecrease: input.reasons.whyDecrease,
@@ -457,6 +475,7 @@ async function generateAnalysis(input: {
           currency: input.currency,
           whyIncrease: input.reasons.whyIncrease,
           whyDecrease: input.reasons.whyDecrease,
+          recentNews: input.newsContext,
         }),
       },
     ],
@@ -506,12 +525,18 @@ async function generateFollowUpAnswer(input: {
   outlook: "Bullish" | "Bearish" | "Neutral";
   probabilityUp: number;
   confidence: number;
+  newsContext: NewsItem[];
+  positionSide: "buy" | "sell";
 }) {
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
   if (!apiKey) {
-    return `${input.symbol} follow-up: ${input.followUpQuestion}. Current bias is ${input.outlook.toLowerCase()} with ${input.probabilityUp}% upside probability and ${input.confidence}% confidence. The active plan uses entry near ${input.currency} ${input.tradePlan.entry.toFixed(2)}, stop-loss near ${input.currency} ${input.tradePlan.stopLoss.toFixed(2)}, and targets near ${input.currency} ${input.tradePlan.tp1.toFixed(2)} / ${input.currency} ${input.tradePlan.tp2.toFixed(2)}.`;
+    const newsLine = input.newsContext.length
+      ? ` Recent news focus: ${input.newsContext[0].title}. Likely effect: ${input.newsContext[0].summary}`
+      : " No live news connector is configured, so this answer is based mostly on price structure and volatility.";
+
+    return `${input.symbol} follow-up: ${input.followUpQuestion}. Current bias is ${input.outlook.toLowerCase()} with ${input.probabilityUp}% upside probability and ${input.confidence}% confidence. The selected side is ${input.positionSide}. The active plan uses entry near ${input.currency} ${input.tradePlan.entry.toFixed(2)}, stop-loss near ${input.currency} ${input.tradePlan.stopLoss.toFixed(2)}, and targets near ${input.currency} ${input.tradePlan.tp1.toFixed(2)} / ${input.currency} ${input.tradePlan.tp2.toFixed(2)}.${newsLine}`;
   }
 
   const client = new OpenAI({ apiKey });
@@ -522,7 +547,7 @@ async function generateFollowUpAnswer(input: {
       {
         role: "system",
         content:
-          "You are a trading assistant continuing a conversation about an existing market setup. Give concise practical answers, grounded in the provided setup. Do not promise outcomes.",
+          "You are a trading assistant continuing a conversation about an existing market setup. Give concise practical answers, grounded in the provided setup. If the user asks about news, explain how recent headlines may affect the market bias, volatility, and trade plan. Do not promise outcomes.",
       },
       {
         role: "user",
@@ -535,6 +560,68 @@ async function generateFollowUpAnswer(input: {
     completion.choices[0]?.message?.content ||
     `${input.symbol} remains ${input.outlook.toLowerCase()} on the current setup.`
   );
+}
+
+async function fetchRecentNewsContext(symbol: string): Promise<NewsItem[]> {
+  const apiKey = process.env.GNEWS_API_KEY;
+  if (!apiKey) {
+    return [];
+  }
+
+  try {
+    const query = buildNewsQuery(symbol);
+    const url = new URL("https://gnews.io/api/v4/search");
+    url.searchParams.set("q", query);
+    url.searchParams.set("lang", "en");
+    url.searchParams.set("max", "3");
+    url.searchParams.set("sortby", "publishedAt");
+    url.searchParams.set("apikey", apiKey);
+
+    const response = await fetch(url.toString(), {
+      next: { revalidate: 900 },
+    });
+    const payload = (await response.json()) as {
+      articles?: Array<{
+        title?: string;
+        description?: string;
+        publishedAt?: string;
+        url?: string;
+        source?: { name?: string };
+      }>;
+    };
+
+    return (payload.articles || [])
+      .map((article) => ({
+        title: article.title || "Recent market headline",
+        publishedAt: article.publishedAt || "",
+        source: article.source?.name || "GNews",
+        url: article.url,
+        summary:
+          article.description ||
+          "This headline may shift sentiment, volatility, and short-term trade expectations.",
+      }))
+      .slice(0, 3);
+  } catch (error) {
+    console.warn("Recent news fetch failed.", error);
+    return [];
+  }
+}
+
+function buildNewsQuery(symbol: string) {
+  const aliases: Record<string, string> = {
+    GC: "gold COMEX gold futures",
+    SI: "silver COMEX silver futures",
+    HG: "copper COMEX copper futures",
+    NG: "natural gas futures energy",
+    CL: "crude oil futures energy",
+    ENQ: "nasdaq futures risk sentiment",
+    NQ: "nasdaq futures risk sentiment",
+    YM: "dow futures macro markets",
+    ES: "s&p 500 futures macro markets",
+  };
+
+  const prefix = symbol.replace(/[A-Z]?\d+/g, "");
+  return aliases[prefix] || `${symbol} commodity futures market`;
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -589,6 +676,7 @@ function buildTradePlan(input: {
   tradingStyle: string;
   currency: string;
   probabilityUp: number;
+  positionSide: "buy" | "sell";
   sizingMode: "lot" | "amount";
   lotSize: number;
   investmentAmount: string;
@@ -597,35 +685,35 @@ function buildTradePlan(input: {
     input.currentPrice * Math.max(input.volatility, 0.0025) * input.horizonRiskFactor,
     input.currentPrice * 0.0025,
   );
-  const isBullish = input.outlook === "Bullish";
-  const bias = isBullish ? 1 : input.outlook === "Bearish" ? -1 : 0.5;
+  const sellBias = input.positionSide === "sell";
+  const bias = sellBias ? -1 : 1;
 
   const entry =
     input.outlook === "Neutral"
       ? input.currentPrice
       : input.currentPrice - baseRisk * 0.18 * bias;
   const stopLoss =
-    input.outlook === "Bearish"
+    sellBias
       ? entry + baseRisk
       : entry - baseRisk;
   const tp1 =
-    input.outlook === "Bearish"
+    sellBias
       ? entry - baseRisk * 1.15
       : entry + baseRisk * 1.15;
   const tp2 =
-    input.outlook === "Bearish"
+    sellBias
       ? entry - baseRisk * 2.05
       : entry + baseRisk * 2.05;
   const breakEven =
-    input.outlook === "Bearish"
+    sellBias
       ? entry - baseRisk * 0.72
       : entry + baseRisk * 0.72;
   const sellZone =
-    input.outlook === "Bearish"
+    sellBias
       ? entry + baseRisk * 0.25
       : entry + baseRisk * 1.75;
   const buyZone =
-    input.outlook === "Bearish"
+    sellBias
       ? entry - baseRisk * 0.4
       : entry - baseRisk * 0.25;
 
@@ -636,7 +724,8 @@ function buildTradePlan(input: {
       : roundPrice(Number(input.investmentAmount || "0") || input.currentPrice);
 
   return {
-    direction: input.outlook === "Bearish" ? "Sell Bias" : "Buy Bias",
+    direction: sellBias ? "Sell Bias" : "Buy Bias",
+    positionSide: input.positionSide,
     entry: roundPrice(entry),
     buyZone: roundPrice(buyZone),
     sellZone: roundPrice(sellZone),
@@ -645,7 +734,7 @@ function buildTradePlan(input: {
     tp1: roundPrice(tp1),
     tp2: roundPrice(tp2),
     invalidation:
-      input.outlook === "Bearish"
+      sellBias
         ? "Invalidate the setup if price holds above the stop-loss zone with momentum."
         : "Invalidate the setup if price loses the stop-loss zone and fails to recover quickly.",
     riskReward: `${(

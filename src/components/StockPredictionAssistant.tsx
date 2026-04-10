@@ -25,6 +25,7 @@ type InsightResponse = {
   whyDecrease: string[];
   tradePlan: {
     direction: string;
+    positionSide: "buy" | "sell";
     entry: number;
     buyZone: number;
     sellZone: number;
@@ -74,6 +75,7 @@ const initialForm = {
   currency: "",
   horizon: "",
   tradingStyle: "",
+  positionSide: "buy",
   sizingMode: "lot",
   lotSize: "1",
   investmentAmount: "",
@@ -204,6 +206,7 @@ export default function StockPredictionAssistant() {
             currency: result.currency,
             horizon: form.horizon,
             tradingStyle: form.tradingStyle,
+            positionSide: form.positionSide,
             sizingMode: form.sizingMode,
             lotSize: form.lotSize,
             investmentAmount: form.investmentAmount,
@@ -275,7 +278,8 @@ export default function StockPredictionAssistant() {
                 <strong>{form.symbol || "COMEX instrument"}</strong>, with a{" "}
                 <strong>{form.horizon || "time horizon"}</strong> horizon and{" "}
                 <strong>{form.tradingStyle || "investment style"}</strong> using{" "}
-                <strong>{form.sizingMode === "lot" ? `${form.lotSize || "1"} lot` : "amount mode"}</strong>.
+                <strong>{form.sizingMode === "lot" ? `${form.lotSize || "1"} lot` : "amount mode"}</strong>{" "}
+                on the <strong>{form.positionSide === "sell" ? "sell" : "buy"}</strong> side.
               </p>
             </div>
 
@@ -316,6 +320,12 @@ export default function StockPredictionAssistant() {
                   <div className={styles.tradeCard}>
                     <span>Direction</span>
                     <strong>{result.tradePlan.direction}</strong>
+                  </div>
+                  <div className={styles.tradeCard}>
+                    <span>Side</span>
+                    <strong>
+                      {result.tradePlan.positionSide === "sell" ? "Sell" : "Buy"}
+                    </strong>
                   </div>
                   <div className={styles.tradeCard}>
                     <span>Entry</span>
@@ -394,6 +404,9 @@ export default function StockPredictionAssistant() {
                   history={result.history}
                   forecast={result.forecast}
                   symbol={result.symbol}
+                  currency={result.currency}
+                  horizonLabel={result.horizonLabel}
+                  tradePlan={result.tradePlan}
                 />
 
                 <AnalysisCharts result={result} />
@@ -574,6 +587,22 @@ export default function StockPredictionAssistant() {
             </label>
 
             <label className={styles.field}>
+              <span>Position Side</span>
+              <select
+                value={form.positionSide}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    positionSide: event.target.value as "buy" | "sell",
+                  }))
+                }
+              >
+                <option value="buy">Buy</option>
+                <option value="sell">Sell</option>
+              </select>
+            </label>
+
+            <label className={styles.field}>
               <span>Sizing Mode</span>
               <select
                 value={form.sizingMode}
@@ -652,58 +681,264 @@ function PredictionChart({
   history,
   forecast,
   symbol,
+  currency,
+  horizonLabel,
+  tradePlan,
 }: {
   history: { label: string; price: number }[];
   forecast: { label: string; price: number }[];
   symbol: string;
+  currency: string;
+  horizonLabel: string;
+  tradePlan: InsightResponse["tradePlan"];
 }) {
   const allPoints = [...history, ...forecast];
-  const prices = allPoints.map((point) => point.price);
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
+  const levelValues = [
+    tradePlan.entry,
+    tradePlan.stopLoss,
+    tradePlan.breakEven,
+    tradePlan.tp1,
+    tradePlan.tp2,
+  ];
+  const prices = [...allPoints.map((point) => point.price), ...levelValues];
+  const rawMin = Math.min(...prices);
+  const rawMax = Math.max(...prices);
+  const rawScale = rawMax - rawMin || Math.max(rawMax * 0.02, 1);
+  const padding = Math.max(rawScale * 0.22, Math.max(rawMax, 1) * 0.0045);
+  const min = rawMin - padding;
+  const max = rawMax + padding;
   const scale = max - min || 1;
+  const chartLeft = 8;
+  const chartRight = 92;
+  const historyEnd = 54;
+  const forecastStart = 56;
+  const chartTop = 10;
+  const chartBottom = 88;
+  const yForPrice = (price: number) =>
+    chartBottom - ((price - min) / scale) * (chartBottom - chartTop);
+  const rawLevelMarkers = [
+    {
+      label: "SL",
+      price: tradePlan.stopLoss,
+      tone: "risk",
+      lineY: yForPrice(tradePlan.stopLoss),
+    },
+    {
+      label: "Entry",
+      price: tradePlan.entry,
+      tone: "entry",
+      lineY: yForPrice(tradePlan.entry),
+    },
+    {
+      label: "BE",
+      price: tradePlan.breakEven,
+      tone: "neutral",
+      lineY: yForPrice(tradePlan.breakEven),
+    },
+    {
+      label: "TP1",
+      price: tradePlan.tp1,
+      tone: "reward",
+      lineY: yForPrice(tradePlan.tp1),
+    },
+    {
+      label: "TP2",
+      price: tradePlan.tp2,
+      tone: "reward",
+      lineY: yForPrice(tradePlan.tp2),
+    },
+  ];
+  const minimumMarkerGap = 12;
+  const sortedMarkers = [...rawLevelMarkers]
+    .sort((a, b) => a.lineY - b.lineY)
+    .reduce<typeof rawLevelMarkers>((items, marker) => {
+      const previous = items[items.length - 1];
+      const adjustedY =
+        previous && marker.lineY - previous.lineY < minimumMarkerGap
+          ? previous.lineY + minimumMarkerGap
+          : marker.lineY;
+
+      items.push({
+        ...marker,
+        lineY: Math.min(chartBottom - 3, Math.max(chartTop + 3, adjustedY)),
+      });
+
+      return items;
+    }, []);
+
+  for (let index = sortedMarkers.length - 2; index >= 0; index -= 1) {
+    const current = sortedMarkers[index];
+    const next = sortedMarkers[index + 1];
+
+    if (next.lineY - current.lineY < minimumMarkerGap) {
+      current.lineY = Math.max(chartTop + 3, next.lineY - minimumMarkerGap);
+    }
+  }
+
+  const levelMarkers = sortedMarkers
+    .map((marker) => ({
+      ...marker,
+      topPercent: ((marker.lineY - chartTop) / (chartBottom - chartTop)) * 100,
+    }));
+  const priceAxis = Array.from({ length: 4 }).map((_, index) => {
+    const price = max - (scale / 3) * index;
+
+    return {
+      price,
+      y: yForPrice(price),
+    };
+  });
+  const timeMarkers = [
+    history[0]?.label || "Start",
+    history[Math.floor((history.length - 1) / 2)]?.label || "Mid",
+    history[history.length - 1]?.label || "Now",
+    forecast[Math.floor((forecast.length - 1) / 2)]?.label || "Proj",
+    forecast[forecast.length - 1]?.label || horizonLabel,
+  ];
 
   const historyPath = history
     .map((point, index) => {
-      const x = 4 + (index / Math.max(history.length - 1, 1)) * 48;
-      const y = 90 - ((point.price - min) / scale) * 70;
+      const x =
+        chartLeft + (index / Math.max(history.length - 1, 1)) * (historyEnd - chartLeft);
+      const y = yForPrice(point.price);
       return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
     })
     .join(" ");
 
   const forecastPath = forecast
     .map((point, index) => {
-      const x = 52 + (index / Math.max(forecast.length - 1, 1)) * 44;
-      const y = 90 - ((point.price - min) / scale) * 70;
+      const x =
+        forecastStart +
+        (index / Math.max(forecast.length - 1, 1)) * (chartRight - forecastStart);
+      const y = yForPrice(point.price);
       return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
     })
     .join(" ");
+  const chartPoints = allPoints.map((point, index) => {
+    const isHistoryPoint = index < history.length;
+    const pointIndex = isHistoryPoint ? index : index - history.length;
+    const x = isHistoryPoint
+      ? chartLeft +
+        (pointIndex / Math.max(history.length - 1, 1)) * (historyEnd - chartLeft)
+      : forecastStart +
+        (pointIndex / Math.max(forecast.length - 1, 1)) *
+          (chartRight - forecastStart);
+
+    return {
+      key: `${point.label}-${index}`,
+      x,
+      y: yForPrice(point.price),
+      isHistoryPoint,
+    };
+  });
 
   return (
     <div className={styles.chartWrap}>
       <div className={styles.chartMeta}>
         <span>{symbol} Price Path</span>
-        <span>History + AI Forecast</span>
+        <span>History + AI Forecast ({horizonLabel})</span>
       </div>
-      <svg
-        aria-label={`${symbol} prediction chart`}
-        className={styles.chart}
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <linearGradient id="forecastStroke" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#1dd3b0" />
-            <stop offset="100%" stopColor="#ffe57d" />
-          </linearGradient>
-        </defs>
-        <line className={styles.gridLine} x1="0" x2="100" y1="20" y2="20" />
-        <line className={styles.gridLine} x1="0" x2="100" y1="50" y2="50" />
-        <line className={styles.gridLine} x1="0" x2="100" y1="80" y2="80" />
-        <line className={styles.divider} x1="50" x2="50" y1="10" y2="92" />
-        <path className={styles.historyPath} d={historyPath} />
-        <path className={styles.forecastPath} d={forecastPath} />
-      </svg>
+      <div className={styles.chartLevelLegend}>
+        {levelMarkers.map((level) => (
+          <span
+            className={styles.chartLevelBadge}
+            data-tone={level.tone}
+            key={level.label}
+          >
+            {level.label}: {currency} {level.price.toFixed(2)}
+          </span>
+        ))}
+      </div>
+      <div className={styles.chartFrame}>
+        <div className={styles.chartAxisColumn}>
+          {priceAxis.map((tick, index) => (
+            <span className={styles.axisLabel} key={`price-${index}`}>
+              {tick.price.toFixed(2)}
+            </span>
+          ))}
+        </div>
+        <div className={styles.chartCanvas}>
+          <svg
+            aria-label={`${symbol} prediction chart`}
+            className={styles.chart}
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id="forecastStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#1dd3b0" />
+                <stop offset="100%" stopColor="#ffe57d" />
+              </linearGradient>
+            </defs>
+            {priceAxis.map((tick, index) => (
+              <line
+                className={styles.gridLine}
+                key={`grid-${index}`}
+                x1={chartLeft}
+                x2={chartRight}
+                y1={tick.y}
+                y2={tick.y}
+              />
+            ))}
+            <line
+              className={styles.divider}
+              x1={historyEnd}
+              x2={historyEnd}
+              y1={chartTop}
+              y2={chartBottom + 2}
+            />
+            {levelMarkers.map((level) => (
+              <line
+                className={`${styles.levelLine} ${
+                  level.tone === "risk"
+                    ? styles.levelLineRisk
+                    : level.tone === "reward"
+                      ? styles.levelLineReward
+                      : level.tone === "entry"
+                        ? styles.levelLineEntry
+                        : styles.levelLineNeutral
+                }`}
+                key={level.label}
+                x1={chartLeft}
+                x2={chartRight}
+                y1={level.lineY}
+                y2={level.lineY}
+              />
+            ))}
+            <path className={styles.historyPath} d={historyPath} />
+            <path className={styles.forecastPath} d={forecastPath} />
+            {chartPoints.map((point) => (
+              <circle
+                className={
+                  point.isHistoryPoint ? styles.historyPoint : styles.forecastPoint
+                }
+                cx={point.x}
+                cy={point.y}
+                key={point.key}
+                r={point.isHistoryPoint ? 1.1 : 1.35}
+              />
+            ))}
+          </svg>
+          <div className={styles.chartMarkerRail}>
+            {levelMarkers.map((level) => (
+              <div
+                className={styles.chartMarker}
+                data-tone={level.tone}
+                key={`marker-${level.label}`}
+                style={{ top: `${level.topPercent}%` }}
+              >
+                <span>{level.label}</span>
+                <strong>{level.price.toFixed(2)}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className={styles.chartTimeAxis}>
+        {timeMarkers.map((label, index) => (
+          <span key={`${label}-${index}`}>{label}</span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -735,7 +970,10 @@ function AnalysisCharts({ result }: { result: InsightResponse }) {
         </div>
         <div className={styles.analysisNumbers}>
           <strong>{result.probabilityUp}%</strong>
-          <span>Chance of upside in selected horizon</span>
+          <span>
+            Bull {result.probabilityUp}% / Bear {100 - result.probabilityUp}% in the
+            selected horizon
+          </span>
         </div>
       </article>
 

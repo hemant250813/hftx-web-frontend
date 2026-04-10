@@ -238,10 +238,40 @@
   font-size: 0.66rem;
 }
 
+.chartLevelLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chartLevelBadge {
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.06);
+  background: rgb(255 255 255 / 0.04);
+  color: var(--soft);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chartLevelBadge[data-tone="risk"] {
+  color: #ffb1a1;
+}
+
+.chartLevelBadge[data-tone="reward"] {
+  color: #b3ffe8;
+}
+
+.chartLevelBadge[data-tone="entry"] {
+  color: #cde4ff;
+}
+
 .chart {
   width: 100%;
-  height: 230px;
-  margin-top: 10px;
+  height: 280px;
 }
 
 .gridLine,
@@ -269,6 +299,130 @@
 .forecastPath {
   stroke: url(#forecastStroke);
   stroke-dasharray: 1.6 1.1;
+}
+
+.levelLine {
+  stroke-width: 0.35;
+  stroke-dasharray: 2 2;
+}
+
+.levelLineRisk {
+  stroke: rgb(229 96 82 / 0.88);
+}
+
+.levelLineReward {
+  stroke: rgb(29 211 176 / 0.88);
+}
+
+.levelLineEntry {
+  stroke: rgb(90 168 255 / 0.88);
+}
+
+.levelLineNeutral {
+  stroke: rgb(255 229 125 / 0.78);
+}
+
+.historyPoint {
+  fill: #5aa8ff;
+}
+
+.forecastPoint {
+  fill: #ffe57d;
+}
+
+.chartFrame {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+  margin-top: 10px;
+}
+
+.chartAxisColumn {
+  display: grid;
+  align-content: stretch;
+  gap: 0;
+}
+
+.axisLabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: rgb(226 237 246 / 0.82);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.chartCanvas {
+  position: relative;
+  min-width: 0;
+  padding-right: 108px;
+}
+
+.chartMarkerRail {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 102px;
+  pointer-events: none;
+}
+
+.chartMarker {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 2px;
+  width: 102px;
+  padding: 7px 9px;
+  border-radius: 12px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(7 19 30 / 0.88);
+  box-shadow: 0 10px 22px rgb(3 10 16 / 0.26);
+}
+
+.chartMarker span {
+  color: var(--muted);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chartMarker strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 0.84rem;
+  line-height: 1.1;
+}
+
+.chartMarker[data-tone="risk"] strong {
+  color: #ffb1a1;
+}
+
+.chartMarker[data-tone="reward"] strong {
+  color: #b3ffe8;
+}
+
+.chartMarker[data-tone="entry"] strong {
+  color: #cde4ff;
+}
+
+.chartTimeAxis {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chartTimeAxis span:nth-child(3) {
+  color: var(--soft);
 }
 
 .summary {
@@ -724,5 +878,66 @@
   .followUpHeader {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .chartFrame {
+    grid-template-columns: 1fr;
+  }
+
+  .chartAxisColumn {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: center;
+  }
+
+  .axisLabel {
+    justify-content: flex-start;
+  }
+
+  .chartCanvas {
+    padding-right: 0;
+    padding-bottom: 128px;
+  }
+
+  .chartMarkerRail {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    height: 120px;
+  }
+
+  .chartMarker {
+    width: 31%;
+    transform: none;
+  }
+
+  .chartMarker:nth-child(1) {
+    left: 0;
+    top: 0 !important;
+  }
+
+  .chartMarker:nth-child(2) {
+    left: 34%;
+    top: 0 !important;
+  }
+
+  .chartMarker:nth-child(3) {
+    right: 0;
+    top: 0 !important;
+  }
+
+  .chartMarker:nth-child(4) {
+    left: 17%;
+    top: 60px !important;
+  }
+
+  .chartMarker:nth-child(5) {
+    right: 17%;
+    top: 60px !important;
+  }
+
+  .chartTimeAxis {
+    grid-template-columns: 1fr 1fr;
   }
 }

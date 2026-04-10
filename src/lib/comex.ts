@@ -139,26 +139,35 @@ export async function collectComexSymbols(
   });
 }
 
-export function buildComexHistory(quote: ComexQuote): PricePoint[] {
-  const anchors = [
-    quote.previousClose || quote.open || quote.last,
-    quote.open || quote.previousClose || quote.last,
-    (quote.low + quote.open) / 2 || quote.last,
-    quote.low || quote.last,
-    (quote.low + quote.last) / 2 || quote.last,
-    quote.bid || quote.last,
-    quote.last,
-    quote.ask || quote.last,
-    (quote.last + quote.high) / 2 || quote.last,
-    quote.high || quote.last,
-    quote.last,
-  ].map((value) => Number(value.toFixed(2)));
+export function buildComexHistory(quote: ComexQuote, length = 90): PricePoint[] {
+  const floor = Math.max(quote.low || quote.last * 0.992, quote.last * 0.9);
+  const ceiling = Math.max(quote.high || quote.last * 1.008, quote.last);
+  const base = quote.previousClose || quote.open || quote.last;
+  const total = Math.max(length, 12);
 
-  return anchors.map((price, index) => ({
-    label:
-      index === anchors.length - 1
-        ? "Now"
-        : `T${String(index + 1).padStart(2, "0")}`,
-    price,
-  }));
+  const series = Array.from({ length: total }).map((_, index) => {
+    const progress = index / Math.max(total - 1, 1);
+    const intradayBias = (quote.last - base) * progress;
+    const cyclic = Math.sin(index / 5.2) * (ceiling - floor) * 0.18;
+    const secondary = Math.cos(index / 8.3) * (ceiling - floor) * 0.1;
+    const interpolated = base + intradayBias + cyclic + secondary;
+    const clamped = Math.min(ceiling, Math.max(floor, interpolated));
+
+    return {
+      label:
+        index === total - 1
+          ? "Now"
+          : `D${String(total - index).padStart(2, "0")}`,
+      price: Number(clamped.toFixed(2)),
+    };
+  });
+
+  if (series.length) {
+    series[series.length - 1] = {
+      label: "Now",
+      price: Number(quote.last.toFixed(2)),
+    };
+  }
+
+  return series;
 }

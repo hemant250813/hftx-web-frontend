@@ -1,6 +1,12 @@
 :root {
-  --background: #fffdf9;
-  --foreground: #18212a;
+  --background: #07111a;
+  --foreground: #f4fbff;
+  --soft: #e5f2fa;
+  --muted: #9bb0bd;
+  --accent: #1dd3b0;
+  --accent-strong: #72f3de;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.14);
 }
 
 html {
@@ -20,8 +26,9 @@ body {
   flex-direction: column;
   color: var(--foreground);
   background:
-    radial-gradient(circle at top left, rgb(240 221 187 / 0.35), transparent 28%),
-    linear-gradient(180deg, #fffdf8, #ffffff 55%, #fcf8ef);
+    radial-gradient(circle at top left, rgb(29 211 176 / 0.12), transparent 26%),
+    radial-gradient(circle at 85% 15%, rgb(90 168 255 / 0.1), transparent 22%),
+    linear-gradient(180deg, #06111a, #07131d 45%, #050d15 100%);
   font-family: "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
