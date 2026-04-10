@@ -1,179 +1,157 @@
 .page {
   position: relative;
-  overflow: hidden;
-}
-
-.whatsappFloat {
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  z-index: 20;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 56px;
-  padding: 0 18px 0 12px;
-  border: 1px solid rgb(255 255 255 / 0.12);
-  border-radius: 999px;
-  background: linear-gradient(135deg, #1abf77, #0f8d59);
-  box-shadow: 0 18px 60px rgb(9 31 21 / 0.45);
-  color: #f8fffb;
-  font-weight: 700;
-}
-
-.whatsappIcon {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 0.18);
-  font-family: var(--font-heading), sans-serif;
+  background:
+    linear-gradient(180deg, #fffdf8 0%, #ffffff 32%, #fcf8ef 100%);
 }
 
 .hero {
   position: relative;
-  min-height: 100vh;
-  padding: 32px clamp(20px, 4vw, 64px) 72px;
+  padding: 28px clamp(20px, 4vw, 64px) 72px;
+  overflow: hidden;
 }
 
-.heroGlow {
+.heroBackground {
   position: absolute;
-  inset: -20% auto auto 50%;
-  width: min(70vw, 850px);
-  aspect-ratio: 1;
+  inset: 0;
   background:
-    radial-gradient(circle, rgb(29 211 176 / 30%) 0%, rgb(29 211 176 / 10%) 28%, transparent 62%),
-    radial-gradient(circle at 35% 70%, rgb(255 161 72 / 25%), transparent 40%);
-  transform: translateX(-35%);
-  filter: blur(18px);
+    radial-gradient(circle at top left, rgb(206 174 108 / 0.18), transparent 36%),
+    radial-gradient(circle at 85% 18%, rgb(241 219 177 / 0.42), transparent 24%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.92), rgb(255 250 242 / 0.94));
   pointer-events: none;
-  animation: pulseGlow 8s ease-in-out infinite;
+}
+
+.navbar,
+.heroGrid,
+.section,
+.contactSection {
+  position: relative;
+  z-index: 1;
 }
 
 .navbar {
-  position: relative;
-  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  padding-bottom: 56px;
+  gap: 20px;
+  padding-bottom: 64px;
 }
 
-.navActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+.logo {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.brand,
-.kicker,
-.sectionEyebrow,
-.featureLabel,
-.panelHeader,
-.brandSub,
-.statCard span,
-.serviceCard p,
-.pillarCard p,
-.contactIntro p,
-.sectionHeading p,
-.motionTop,
-.contactHint,
-.tickerItem {
+.logoWord {
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1.45rem, 2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  color: #15202b;
+}
+
+.logoMark {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f5ebd6;
+  color: #8d6726;
   font-family: var(--font-mono), monospace;
-}
-
-.brand {
-  font-size: 1rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
+  letter-spacing: 0.16em;
 }
 
-.brandSub {
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 0.76rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.navLinks {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  color: #56616c;
 }
 
-.navGhost,
-.navCta,
+.navLinks a {
+  transition: color 160ms ease, transform 160ms ease, background-color 160ms ease;
+}
+
+.navLinks a:hover,
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translateY(-1px);
+}
+
+.navButton,
 .primaryButton,
-.secondaryButton,
-.whatsappButton {
+.secondaryButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 48px;
+  padding: 0 22px;
   border-radius: 999px;
-  transition:
-    transform 180ms ease,
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease;
+  border: 1px solid #eadfcb;
+  font-weight: 600;
 }
 
-.navGhost,
-.navCta {
-  min-height: 44px;
-  padding: 0 18px;
-  border: 1px solid var(--border-strong);
-  background: rgb(6 17 27 / 78%);
+.navButton,
+.secondaryButton {
+  background: rgb(255 255 255 / 0.9);
 }
 
-.navGhost:hover,
-.navCta:hover,
-.primaryButton:hover,
-.secondaryButton:hover,
-.whatsappButton:hover,
-.whatsappFloat:hover {
-  transform: translateY(-2px);
+.primaryButton {
+  background: linear-gradient(135deg, #f2d69a, #efd2ae);
+  color: #5f4514;
+  box-shadow: 0 14px 34px rgb(214 184 124 / 0.22);
 }
 
-.heroContent {
-  position: relative;
-  z-index: 1;
+.heroGrid {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-  gap: clamp(28px, 4vw, 56px);
+  gap: 28px;
   align-items: center;
 }
 
-.heroCopy h1,
-.sectionHeading h2,
-.contactIntro h2,
-.serviceCard h3,
-.pillarCard h3,
-.motionCard h3 {
-  font-family: var(--font-heading), sans-serif;
+.eyebrow,
+.cardLabel,
+.contactLabel {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #b18843;
 }
 
-.kicker,
-.sectionEyebrow,
-.featureLabel {
-  color: var(--accent);
-  font-size: 0.84rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+.heroCopy h1,
+.sectionHeader h2,
+.aboutCard h2,
+.heroCard h2,
+.serviceCard h3 {
+  font-family: var(--font-heading), sans-serif;
+  color: #15202b;
 }
 
 .heroCopy h1 {
   max-width: 11ch;
-  margin-top: 18px;
-  font-size: clamp(3.6rem, 8vw, 7rem);
-  line-height: 0.94;
+  margin-top: 16px;
+  font-size: clamp(3rem, 7vw, 6rem);
+  line-height: 0.95;
   letter-spacing: -0.07em;
 }
 
-.heroText {
-  max-width: 680px;
-  margin-top: 24px;
-  color: var(--muted);
-  font-size: clamp(1rem, 1.6vw, 1.18rem);
+.lead,
+.sectionHeader p,
+.aboutCard p,
+.serviceCard p,
+.metricCard span,
+.solutionItem {
+  color: #5c6670;
   line-height: 1.8;
+}
+
+.lead {
+  max-width: 700px;
+  margin-top: 24px;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
 }
 
 .heroActions {
@@ -183,688 +161,174 @@
   margin-top: 32px;
 }
 
-.primaryButton,
-.secondaryButton,
-.whatsappButton {
-  min-height: 52px;
-  padding: 0 24px;
-  font-weight: 600;
-}
-
-.primaryButton {
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #04131c;
-  box-shadow: 0 16px 40px rgb(29 211 176 / 0.18);
-}
-
-.secondaryButton {
-  border: 1px solid var(--border-strong);
-  background: rgb(8 19 29 / 70%);
-}
-
-.capabilityList {
+.highlightList {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px 18px;
-  margin-top: 40px;
+  margin-top: 36px;
   list-style: none;
 }
 
-.capabilityList li {
+.highlightList li {
   position: relative;
   padding-left: 18px;
-  color: var(--soft);
-  line-height: 1.5;
+  color: #33404d;
 }
 
-.capabilityList li::before {
+.highlightList li::before {
   content: "";
   position: absolute;
+  top: 11px;
   left: 0;
-  top: 10px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #fff16d);
-  box-shadow: 0 0 18px rgb(29 211 176 / 40%);
+  background: #d5b173;
 }
 
-.heroPanel,
+.heroCard,
 .serviceCard,
-.pillarCard,
-.featurePanel,
-.contactSection,
-.motionCard {
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, rgb(9 21 32 / 94%), rgb(5 12 20 / 96%));
-  box-shadow: 0 18px 70px rgb(2 8 14 / 38%);
-}
-
-.heroPanel {
-  position: relative;
-  padding: 22px;
+.solutionPanel,
+.aboutCard,
+.contactCard {
+  border: 1px solid #eee2cf;
   border-radius: 28px;
-  overflow: hidden;
-}
-
-.panelHeader,
-.motionTop {
-  display: flex;
-  justify-content: space-between;
-  color: var(--muted);
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.chartArea {
-  position: relative;
-  min-height: 320px;
-  margin-top: 18px;
-  border-radius: 22px;
-  border: 1px solid rgb(255 255 255 / 0.06);
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.03), transparent),
-    radial-gradient(circle at top, rgb(29 211 176 / 0.18), transparent 45%),
-    #07131e;
-  overflow: hidden;
+    linear-gradient(180deg, rgb(255 255 255 / 0.98), rgb(255 248 239 / 0.96));
+  box-shadow: 0 22px 60px rgb(223 205 176 / 0.2);
 }
 
-.grid,
-.motionNoise {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgb(255 255 255 / 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.08) 1px, transparent 1px);
-  background-size: 18% 22%;
-  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.85), transparent);
+.heroCard {
+  padding: 28px;
 }
 
-.scanline {
-  position: absolute;
-  inset: -20% 0 auto;
-  height: 40%;
-  background: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.12), transparent);
-  animation: scanMove 6s linear infinite;
+.heroCard h2 {
+  margin-top: 16px;
+  font-size: clamp(1.6rem, 2.4vw, 2.3rem);
+  line-height: 1.08;
+  letter-spacing: -0.05em;
 }
 
-.glowOrb {
-  position: absolute;
-  right: 14%;
-  top: 20%;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(29 211 176 / 0.34), transparent 70%);
-  filter: blur(4px);
-  animation: orbFloat 7s ease-in-out infinite;
-}
-
-.chartLine,
-.chartLineTwo {
-  position: absolute;
-  inset: auto 0 0;
-  height: 100%;
-}
-
-.chartLine::before,
-.chartLineTwo::before {
-  content: "";
-  position: absolute;
-  inset: 20% 6% 12%;
-  border-radius: 999px;
-  filter: drop-shadow(0 0 16px rgb(29 211 176 / 0.55));
-  animation: waveShift 5s ease-in-out infinite alternate;
-}
-
-.chartLine::before {
-  background: linear-gradient(90deg, transparent 0%, var(--accent) 15%, #f8f17e 85%, transparent 100%);
-  clip-path: polygon(0 74%, 10% 72%, 18% 59%, 31% 61%, 44% 41%, 55% 49%, 68% 24%, 82% 31%, 100% 5%, 100% 12%, 82% 38%, 68% 31%, 55% 57%, 44% 48%, 31% 68%, 18% 65%, 10% 79%, 0 81%);
-}
-
-.chartLineTwo::before {
-  inset: 25% 6% 16%;
-  background: linear-gradient(90deg, transparent 0%, #5aa8ff 18%, #9bc5ff 75%, transparent 100%);
-  opacity: 0.75;
-  animation-duration: 6.5s;
-  clip-path: polygon(0 74%, 14% 76%, 28% 64%, 40% 69%, 58% 43%, 73% 47%, 100% 23%, 100% 29%, 73% 54%, 58% 50%, 40% 76%, 28% 70%, 14% 82%, 0 82%);
-}
-
-.panelStats {
+.metricGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 14px;
+  gap: 14px;
+  margin-top: 24px;
 }
 
-.statCard {
-  padding: 14px;
-  border-radius: 18px;
-  border: 1px solid rgb(255 255 255 / 0.06);
-  background: rgb(255 255 255 / 0.03);
-  animation: statPulse 4.8s ease-in-out infinite;
+.metricCard {
+  padding: 18px;
+  border: 1px solid #efe5d5;
+  border-radius: 20px;
+  background: #fffdfa;
 }
 
-.statCard strong {
+.metricCard strong {
   display: block;
+  color: #6a4b19;
   font-family: var(--font-heading), sans-serif;
   font-size: 1.1rem;
 }
 
-.statCard span {
+.metricCard span {
   display: block;
   margin-top: 8px;
-  color: var(--muted);
-  font-size: 0.74rem;
-  line-height: 1.5;
-}
-
-.tickerSection {
-  overflow: hidden;
-  padding: 0 0 30px;
-}
-
-.tickerTrack {
-  display: flex;
-  gap: 18px;
-  width: max-content;
-  padding: 14px 0;
-  animation: tickerMove 26s linear infinite;
-}
-
-.tickerItem {
-  display: inline-flex;
-  align-items: center;
-  min-height: 42px;
-  padding: 0 16px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: rgb(9 22 34 / 0.82);
-  color: var(--soft);
-  font-size: 0.76rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .section {
-  padding: 32px clamp(20px, 4vw, 64px) 88px;
+  padding: 20px clamp(20px, 4vw, 64px) 84px;
 }
 
-.sectionHeading {
+.sectionHeader {
   max-width: 760px;
 }
 
-.sectionHeading h2,
-.contactIntro h2 {
-  margin-top: 16px;
-  font-size: clamp(2rem, 3vw, 3.4rem);
-  line-height: 1;
+.sectionHeader h2,
+.aboutCard h2 {
+  margin-top: 14px;
+  font-size: clamp(2rem, 3vw, 3.2rem);
+  line-height: 1.02;
   letter-spacing: -0.05em;
 }
 
-.sectionHeading p,
-.contactIntro p,
-.motionCard p {
-  margin-top: 18px;
-  color: var(--muted);
-  line-height: 1.8;
-}
-
-.cardGrid,
-.pillarGrid,
-.motionGrid,
-.chartGrid {
+.serviceGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
   margin-top: 34px;
 }
 
-.serviceCard,
-.pillarCard,
-.motionCard,
-.chartCard {
-  border-radius: 24px;
-  padding: 28px;
+.serviceCard {
+  padding: 26px;
 }
 
-.serviceCard h3,
-.pillarCard h3,
-.motionCard h3,
-.chartCard h3 {
-  font-size: 1.3rem;
-  line-height: 1.1;
+.serviceCard h3 {
+  font-size: 1.28rem;
+  line-height: 1.15;
 }
 
-.serviceCard p,
-.pillarCard p {
-  margin-top: 16px;
-  color: var(--muted);
-  line-height: 1.75;
-  font-size: 0.94rem;
+.serviceCard p {
+  margin-top: 14px;
 }
 
-.motionSection {
-  position: relative;
-}
-
-.motionCard {
-  position: relative;
-  overflow: hidden;
-}
-
-.chartCard {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, rgb(9 21 32 / 94%), rgb(5 12 20 / 96%));
-  box-shadow: 0 18px 70px rgb(2 8 14 / 38%);
-}
-
-.chartSurface {
-  position: relative;
-  min-height: 220px;
-  margin-top: 18px;
-  border-radius: 20px;
-  border: 1px solid rgb(255 255 255 / 0.08);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.03), transparent),
-    radial-gradient(circle at top, rgb(31 129 255 / 0.1), transparent 45%),
-    #07131e;
-  overflow: hidden;
-}
-
-.chartSurface::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgb(255 255 255 / 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.06) 1px, transparent 1px);
-  background-size: 20% 22%;
-  mask-image: linear-gradient(180deg, rgb(0 0 0 / 0.9), transparent);
-}
-
-.candleChart {
-  position: absolute;
-  inset: 18px 18px 22px;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  align-items: end;
-  gap: 10px;
-}
-
-.candle {
-  position: relative;
-  justify-self: center;
-  width: 12px;
-  height: var(--wick-height);
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.08));
-  border-radius: 999px;
-  transform: translateY(var(--offset));
-  animation: candleFloat 6s ease-in-out infinite alternate;
-}
-
-.candle::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 14%;
-  width: 20px;
-  height: var(--body-height);
-  transform: translateX(-50%);
-  border-radius: 6px;
-  background: linear-gradient(180deg, #19d6b3, #0ea36a);
-  box-shadow: 0 0 16px rgb(25 214 179 / 0.25);
-}
-
-.candle:nth-child(3n)::before,
-.candle:nth-child(5n)::before {
-  background: linear-gradient(180deg, #ffb04d, #e56052);
-  box-shadow: 0 0 16px rgb(229 96 82 / 0.2);
-}
-
-.trendChart {
-  position: absolute;
-  inset: 0;
-}
-
-.trendArea {
-  position: absolute;
-  inset: 20% 8% 22%;
-  background: linear-gradient(180deg, rgb(29 211 176 / 0.3), rgb(29 211 176 / 0.04));
-  clip-path: polygon(0 86%, 10% 78%, 20% 80%, 31% 56%, 44% 60%, 55% 42%, 68% 48%, 78% 27%, 90% 32%, 100% 10%, 100% 100%, 0 100%);
-}
-
-.trendLine {
-  position: absolute;
-  inset: 20% 8% 22%;
-  background: linear-gradient(90deg, transparent, #1cd3b0, #ffe57d, transparent);
-  filter: drop-shadow(0 0 16px rgb(29 211 176 / 0.3));
-  clip-path: polygon(0 86%, 10% 78%, 20% 80%, 31% 56%, 44% 60%, 55% 42%, 68% 48%, 78% 27%, 90% 32%, 100% 10%, 100% 16%, 90% 38%, 78% 33%, 68% 55%, 55% 49%, 44% 67%, 31% 63%, 20% 87%, 10% 85%, 0 93%);
-  animation: waveShift 5.5s ease-in-out infinite alternate;
-}
-
-.volumeBars {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 14px;
-  display: grid;
-  grid-template-columns: repeat(16, 1fr);
-  align-items: end;
-  gap: 8px;
-  height: 86px;
-}
-
-.volumeBars span {
-  height: var(--bar-height);
-  border-radius: 999px 999px 4px 4px;
-  background: linear-gradient(180deg, rgb(90 168 255 / 0.95), rgb(90 168 255 / 0.12));
-  animation: barPulse 5s ease-in-out infinite;
-}
-
-.radialChart {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-}
-
-.radialRing {
-  position: absolute;
-  width: 170px;
-  height: 170px;
-  border-radius: 50%;
-  background:
-    conic-gradient(from 210deg, #18d1b8 0 34%, #5aa8ff 34% 62%, #ffe57d 62% 78%, rgb(255 255 255 / 0.08) 78% 100%);
-  box-shadow: 0 0 32px rgb(29 211 176 / 0.18);
-  animation: radialTurn 10s linear infinite;
-}
-
-.radialRing::before {
-  content: "";
-  position: absolute;
-  inset: 18px;
-  border-radius: 50%;
-  background: #07131e;
-  border: 1px solid rgb(255 255 255 / 0.06);
-}
-
-.radialCore {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-}
-
-.radialCore strong {
-  font-family: var(--font-heading), sans-serif;
-  font-size: 2rem;
-}
-
-.radialCore span {
-  color: var(--muted);
-  font-family: var(--font-mono), monospace;
-  font-size: 0.76rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.heatmap {
-  position: absolute;
-  inset: 18px;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-}
-
-.heatCell {
-  border-radius: 12px;
-  background:
-    linear-gradient(135deg, rgb(25 214 179 / var(--heat-opacity)), rgb(90 168 255 / calc(var(--heat-opacity) * 0.9)));
-  border: 1px solid rgb(255 255 255 / 0.05);
-  animation: heatPulse 4.6s ease-in-out infinite;
-}
-
-.motionScreen {
-  position: relative;
-  min-height: 210px;
-  margin-top: 18px;
-  border-radius: 20px;
-  border: 1px solid rgb(255 255 255 / 0.07);
-  background:
-    radial-gradient(circle at top, rgb(31 129 255 / 0.18), transparent 35%),
-    linear-gradient(180deg, rgb(8 24 37), rgb(3 10 16));
-  overflow: hidden;
-}
-
-.motionBars {
-  position: absolute;
-  inset: auto 0 0;
-  height: 100%;
-  background:
-    linear-gradient(90deg, transparent 0%, rgb(255 184 76 / 0.45) 25%, transparent 50%, rgb(29 211 176 / 0.45) 75%, transparent 100%);
-  background-size: 40% 100%;
-  animation: barsFlow 7s linear infinite;
-  opacity: 0.8;
-}
-
-.motionWave,
-.motionWaveAlt {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  height: 90px;
-  border-radius: 999px;
-  filter: drop-shadow(0 0 18px rgb(29 211 176 / 0.28));
-}
-
-.motionWave {
-  bottom: 22%;
-  background: linear-gradient(90deg, transparent, #18d1b8, #ffe57d, transparent);
-  clip-path: polygon(0 70%, 10% 66%, 20% 54%, 31% 62%, 44% 34%, 57% 46%, 71% 21%, 84% 34%, 100% 8%, 100% 20%, 84% 44%, 71% 31%, 57% 55%, 44% 43%, 31% 71%, 20% 62%, 10% 74%, 0 80%);
-  animation: waveShift 5.5s ease-in-out infinite alternate;
-}
-
-.motionWaveAlt {
-  bottom: 18%;
-  background: linear-gradient(90deg, transparent, #5aa8ff, #9bc5ff, transparent);
-  clip-path: polygon(0 75%, 12% 71%, 24% 59%, 37% 67%, 50% 45%, 62% 54%, 75% 30%, 87% 38%, 100% 20%, 100% 28%, 87% 46%, 75% 38%, 62% 60%, 50% 53%, 37% 74%, 24% 66%, 12% 80%, 0 83%);
-  animation: waveShift 6.4s ease-in-out infinite alternate-reverse;
-}
-
-.motionNoise {
-  opacity: 0.4;
-  animation: scanMove 8s linear infinite;
-}
-
-.darkSection {
-  background:
-    radial-gradient(circle at top left, rgb(24 76 108 / 0.32), transparent 34%),
-    linear-gradient(180deg, rgb(4 11 17 / 0.2), transparent);
+.solutionsSection {
+  padding-top: 0;
 }
 
 .splitLayout {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
   gap: 24px;
   align-items: start;
 }
 
-.featurePanel {
+.solutionPanel {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-  padding: 28px;
-  border-radius: 24px;
+  gap: 14px;
+  padding: 24px;
 }
 
-.featurePanel p {
-  margin-top: 12px;
+.solutionItem {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid #efe3d0;
+  background: #fffdf9;
+  color: #34404c;
   font-family: var(--font-heading), sans-serif;
-  font-size: 1.05rem;
-  line-height: 1.2;
+  line-height: 1.4;
+}
+
+.aboutCard {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 24px;
+  padding: 32px;
 }
 
 .contactSection {
+  padding-top: 0;
+}
+
+.contactCard {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
-  gap: 24px;
-  margin: 0 clamp(20px, 4vw, 64px) 72px;
-  padding: 32px;
-  border-radius: 32px;
+  gap: 18px;
+  margin-top: 28px;
+  padding: 28px;
+  max-width: 760px;
 }
 
-.contactActions {
-  display: grid;
-  gap: 14px;
-  margin-top: 24px;
-}
-
-.whatsappButton {
-  width: fit-content;
-  background: linear-gradient(135deg, #20d889, #10a361);
-  color: #04140e;
-}
-
-.contactHint {
-  color: var(--muted);
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-@keyframes pulseGlow {
-  0%,
-  100% {
-    transform: translateX(-35%) scale(1);
-    opacity: 0.75;
-  }
-
-  50% {
-    transform: translateX(-34%) scale(1.08);
-    opacity: 1;
-  }
-}
-
-@keyframes scanMove {
-  0% {
-    transform: translateY(-100%);
-  }
-
-  100% {
-    transform: translateY(300%);
-  }
-}
-
-@keyframes orbFloat {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-
-  50% {
-    transform: translate3d(10px, 14px, 0);
-  }
-}
-
-@keyframes waveShift {
-  0% {
-    transform: translateX(-8px) translateY(6px);
-  }
-
-  100% {
-    transform: translateX(8px) translateY(-6px);
-  }
-}
-
-@keyframes statPulse {
-  0%,
-  100% {
-    box-shadow: inset 0 0 0 0 rgb(29 211 176 / 0);
-  }
-
-  50% {
-    box-shadow: inset 0 0 0 1px rgb(29 211 176 / 0.25);
-  }
-}
-
-@keyframes tickerMove {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes barsFlow {
-  0% {
-    transform: translateX(-10%);
-  }
-
-  100% {
-    transform: translateX(10%);
-  }
-}
-
-@keyframes candleFloat {
-  0% {
-    transform: translateY(calc(var(--offset) - 6px));
-  }
-
-  100% {
-    transform: translateY(calc(var(--offset) + 6px));
-  }
-}
-
-@keyframes barPulse {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes radialTurn {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes heatPulse {
-  0%,
-  100% {
-    transform: scale(1);
-    filter: brightness(0.9);
-  }
-
-  50% {
-    transform: scale(1.04);
-    filter: brightness(1.15);
-  }
+.contactCard p {
+  margin-top: 8px;
+  color: #34404c;
+  line-height: 1.7;
 }
 
 @media (max-width: 1080px) {
-  .heroContent,
+  .heroGrid,
   .splitLayout,
-  .contactSection,
-  .cardGrid,
-  .pillarGrid,
-  .motionGrid,
-  .chartGrid {
+  .aboutCard,
+  .serviceGrid {
     grid-template-columns: 1fr;
   }
 
@@ -876,45 +340,36 @@
 @media (max-width: 720px) {
   .hero {
     padding-top: 20px;
+    padding-bottom: 52px;
   }
 
   .navbar {
-    align-items: flex-start;
     flex-direction: column;
-    padding-bottom: 42px;
+    align-items: flex-start;
+    padding-bottom: 40px;
   }
 
-  .navActions {
+  .navLinks,
+  .highlightList,
+  .metricGrid,
+  .solutionPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .navLinks {
+    display: grid;
     width: 100%;
+    gap: 12px;
   }
 
   .heroCopy h1 {
     max-width: none;
-    font-size: clamp(2.7rem, 17vw, 4.8rem);
-  }
-
-  .capabilityList,
-  .panelStats,
-  .featurePanel {
-    grid-template-columns: 1fr;
+    font-size: clamp(2.6rem, 15vw, 4.5rem);
   }
 
   .section,
   .hero {
     padding-left: 18px;
     padding-right: 18px;
-  }
-
-  .contactSection {
-    margin-left: 18px;
-    margin-right: 18px;
-    padding: 24px;
-  }
-
-  .whatsappFloat {
-    right: 14px;
-    bottom: 14px;
-    min-height: 50px;
-    padding-right: 16px;
   }
 }

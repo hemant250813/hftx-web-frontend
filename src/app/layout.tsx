@@ -14,9 +14,9 @@ const monoFont = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HFTX AI | AI Trading, Market Data & Growth Solutions",
+  title: "Moneyplant HK Ltd | Investment, Trading & Platform Solutions",
   description:
-    "HFTX AI builds AI-powered trading applications, news-driven algo systems, white-label solutions, market data tools, and digital growth services for clients worldwide.",
+    "Moneyplant HK Ltd provides investment services, marketing and trading support, fund management, and software solutions for trading platforms, including currency and reporting plugins.",
 };
 
 export default function RootLayout({

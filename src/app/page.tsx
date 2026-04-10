@@ -1,448 +1,219 @@
-import type { CSSProperties } from "react";
-import ContactForm from "@/components/ContactForm";
-import SignalSubscription from "@/components/SignalSubscription";
-import StockPredictionAssistant from "@/components/StockPredictionAssistant";
 import styles from "./page.module.css";
 
-const whatsappMessage =
-  "Hello HFTX AI, I want to discuss a trading, AI, or software project.";
-const whatsappNumber = (
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+447916699193"
-).replace(/\D/g, "");
-const whatsappHref = whatsappNumber
-  ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
-  : `https://api.whatsapp.com/send?text=${encodeURIComponent(whatsappMessage)}`;
-
-const capabilities = [
-  "AI-powered trading applications",
-  "News-driven algorithmic strategies",
-  "Prop firm operations and trading infrastructure",
-  "White-label trading software solutions",
-  "Market data, analytics, and risk support",
-  "Marketing, web design, and developer staffing",
-];
-
-const serviceCards = [
+const services = [
   {
-    title: "Trading Intelligence",
+    title: "Investment Services",
     description:
-      "We build trading platforms and algorithmic engines that turn live news, market context, and AI signals into faster decisions.",
+      "Strategic investment support for clients who need disciplined market insight, structured planning, and long-term value creation.",
+  },
+  {
+    title: "Marketing & Trading",
+    description:
+      "Commercial marketing support paired with practical trading experience to help financial products reach the right audience with confidence.",
+  },
+  {
+    title: "Fund Management",
+    description:
+      "We help manage funds with a focus on governance, transparency, portfolio direction, and informed capital allocation.",
   },
   {
     title: "Trading Software Solutions",
     description:
-      "From broker tools to white-label platforms, market data pipelines, and custom dashboards, we create software around serious trading workflows.",
+      "Custom software for trading platforms, internal dashboards, reporting flows, broker operations, and performance visibility.",
   },
   {
-    title: "Growth Services",
+    title: "Currency Plugins",
     description:
-      "HFTX AI also supports brands with marketing, web design, electronics integration, and software developers for high-impact delivery teams.",
+      "Flexible plugins that extend trading systems with currency tools, pricing utilities, multi-pair workflows, and live operational add-ons.",
+  },
+  {
+    title: "Reports & Analytics Plugins",
+    description:
+      "Reporting plugins built for performance summaries, operational reporting, management insights, and decision-ready financial views.",
   },
 ];
 
-const metrics = [
-  { value: "AI + News", label: "Signals fused into trading logic" },
-  { value: "Global", label: "Built for worldwide trading operations" },
-  { value: "24/7", label: "Support mindset for trading operations" },
-  { value: "Multi-Service", label: "Trading, design, tech, and growth" },
+const highlights = [
+  "Investment advisory support",
+  "Trading and market operations",
+  "Fund oversight and reporting",
+  "Platform software development",
+  "Currency and report plugins",
+  "Clean, scalable client delivery",
 ];
 
-const pillars = [
-  {
-    title: "High-Frequency Thinking",
-    text: "Architecture designed for responsive data flow, real-time monitoring, and execution-ready systems.",
-  },
-  {
-    title: "AI-Native Analysis",
-    text: "We combine machine intelligence with news interpretation, market analysis, and risk-focused automation.",
-  },
-  {
-    title: "Growth Mindset Delivery",
-    text: "Every product is built to scale, adapt, and help clients move from idea to market advantage faster.",
-  },
-];
-
-const tickerItems = [
-  "NQ +1.84%",
-  "BTC +3.12%",
-  "XAU -0.44%",
-  "NEWS SIGNAL: FED / CPI / EARNINGS",
-  "RISK ENGINE ONLINE",
-  "PROP DESK READY",
-  "MARKET DATA STREAMING",
-];
-
-const motionFrames = [
-  {
-    title: "News Momentum Reel",
-    tag: "AI Parsing",
-    description:
-      "Streaming sentiment shifts, headline clustering, and event-driven trade signals in one moving intelligence layer.",
-  },
-  {
-    title: "Execution Pulse",
-    tag: "Low Latency",
-    description:
-      "Fast-moving orchestration for strategies, dashboards, and broker-facing systems built around live market behavior.",
-  },
-  {
-    title: "Risk Radar",
-    tag: "Monitoring",
-    description:
-      "Heatmap-style oversight for volatility, exposure, and operational alerts across modern trading businesses.",
-  },
-];
-
-const chartCards = [
-  {
-    title: "Candlestick View",
-    label: "Price Action",
-    description:
-      "A terminal-style chart surface for execution, momentum, and intraday direction.",
-    type: "candles",
-  },
-  {
-    title: "Trend & Volume",
-    label: "Signal Overlay",
-    description:
-      "Area and histogram layers that suggest AI scoring, momentum shifts, and volume pressure.",
-    type: "trend",
-  },
-  {
-    title: "Allocation Wheel",
-    label: "Portfolio Mix",
-    description:
-      "A circular composition for risk exposure, sector balance, or asset distribution visuals.",
-    type: "radial",
-  },
-  {
-    title: "Market Heatmap",
-    label: "Cross-Asset Scan",
-    description:
-      "A grid-based signal board suited for volatility maps, winners/losers, and watchlists.",
-    type: "heatmap",
-  },
+const platformItems = [
+  "Portfolio dashboards",
+  "Trade reporting modules",
+  "Currency conversion tools",
+  "Manager review screens",
+  "Client-facing analytics",
+  "Plugin-ready architecture",
 ];
 
 export default function Home() {
   return (
     <main className={styles.page}>
-      <a
-        aria-label="Chat with HFTX AI on WhatsApp"
-        className={styles.whatsappFloat}
-        href={whatsappHref}
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <span className={styles.whatsappIcon}>W</span>
-        <span>WhatsApp</span>
-      </a>
-
       <section className={styles.hero}>
-        <div className={styles.heroGlow} />
-        <div className={styles.navbar}>
-          <div>
-            <p className={styles.brand}>HFTX AI</p>
-            <p className={styles.brandSub}>Worldwide Trading Technology</p>
-          </div>
-          <div className={styles.navActions}>
-            <a
-              className={styles.navGhost}
-              href={whatsappHref}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              WhatsApp
-            </a>
-            <a className={styles.navCta} href="#contact">
-              Talk to Our Team
-            </a>
-          </div>
-        </div>
+        <div className={styles.heroBackground} />
 
-        <div className={styles.heroContent}>
+        <header className={styles.navbar}>
+          <a className={styles.logo} href="#top" aria-label="Moneyplant HK Ltd home">
+            <span className={styles.logoWord}>Moneyplant</span>
+            <span className={styles.logoMark}>HK</span>
+          </a>
+
+          <nav className={styles.navLinks} aria-label="Primary">
+            <a href="#services">Services</a>
+            <a href="#solutions">Solutions</a>
+            <a href="#about">About</a>
+            <a href="#contact" className={styles.navButton}>
+              Contact
+            </a>
+          </nav>
+        </header>
+
+        <div className={styles.heroGrid}>
           <div className={styles.heroCopy}>
-            <p className={styles.kicker}>AI x Trading x Growth</p>
+            <p className={styles.eyebrow}>Moneyplant HK Ltd</p>
             <h1>
-              Building intelligent trading systems for fast markets and ambitious
-              companies.
+              Investment, trading, fund management, and software solutions in one
+              modern platform business.
             </h1>
-            <p className={styles.heroText}>
-              HFTX AI creates AI-powered trading applications, news-based algo
-              systems, prop firm solutions, market-data products, digital growth
-              experiences, and software teams for modern businesses.
+            <p className={styles.lead}>
+              We provide investment services, marketing and trading support,
+              manage funds, and create software solutions for trading platforms,
+              including plugins for currency workflows and reports.
             </p>
 
-          <div className={styles.heroActions}>
-              <a className={styles.primaryButton} href="#assistant">
-                Try AI Assistant
-              </a>
-              <a className={styles.secondaryButton} href="#contact">
-                Start a Project
+            <div className={styles.heroActions}>
+              <a className={styles.primaryButton} href="#contact">
+                Talk to Us
               </a>
               <a className={styles.secondaryButton} href="#services">
                 Explore Services
               </a>
             </div>
 
-            <ul className={styles.capabilityList}>
-              {capabilities.map((item) => (
+            <ul className={styles.highlightList}>
+              {highlights.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
           </div>
 
-          <div className={styles.heroPanel}>
-            <div className={styles.panelHeader}>
-              <span>Live Direction</span>
-              <span>Signal Engine</span>
-            </div>
-            <div className={styles.chartArea}>
-              <div className={styles.chartLine} />
-              <div className={styles.chartLineTwo} />
-              <div className={styles.grid} />
-              <div className={styles.scanline} />
-              <div className={styles.glowOrb} />
-            </div>
-            <div className={styles.panelStats}>
-              {metrics.map((item) => (
-                <div key={item.label} className={styles.statCard}>
-                  <strong>{item.value}</strong>
-                  <span>{item.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+          <aside className={styles.heroCard}>
+            <p className={styles.cardLabel}>Company Focus</p>
+            <h2>Built for clients who need finance expertise and delivery speed.</h2>
 
-      <StockPredictionAssistant />
-      <SignalSubscription />
-
-      <section className={styles.tickerSection} aria-label="Live market style ticker">
-        <div className={styles.tickerTrack}>
-          {[...tickerItems, ...tickerItems].map((item, index) => (
-            <span key={`${item}-${index}`} className={styles.tickerItem}>
-              {item}
-            </span>
-          ))}
+            <div className={styles.metricGrid}>
+              <div className={styles.metricCard}>
+                <strong>Investment</strong>
+                <span>Structured financial services</span>
+              </div>
+              <div className={styles.metricCard}>
+                <strong>Trading</strong>
+                <span>Market-led execution thinking</span>
+              </div>
+              <div className={styles.metricCard}>
+                <strong>Funds</strong>
+                <span>Portfolio and reporting discipline</span>
+              </div>
+              <div className={styles.metricCard}>
+                <strong>Software</strong>
+                <span>Trading platform extensions</span>
+              </div>
+            </div>
+          </aside>
         </div>
       </section>
 
       <section className={styles.section} id="services">
-        <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>What We Do</p>
-          <h2>Technology and execution for trading-led businesses.</h2>
+        <div className={styles.sectionHeader}>
+          <p className={styles.eyebrow}>Services</p>
+          <h2>Core services designed around financial operations and platform growth.</h2>
           <p>
-            We work across trading software, AI research, growth systems, and
-            technical delivery so clients can build, launch, and scale with one
-            strategic partner.
+            Moneyplant HK Ltd combines advisory, operational, and technical
+            capabilities so clients can work with one team across finance,
+            execution, and product delivery.
           </p>
         </div>
 
-        <div className={styles.cardGrid}>
-          {serviceCards.map((card) => (
-            <article key={card.title} className={styles.serviceCard}>
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
+        <div className={styles.serviceGrid}>
+          {services.map((service) => (
+            <article className={styles.serviceCard} key={service.title}>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className={`${styles.section} ${styles.motionSection}`}>
-        <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Market Motion</p>
-          <h2>Trading visuals that present speed, intelligence, and real market focus.</h2>
-          <p>
-            These motion layers help communicate live data flow, AI-driven
-            analysis, and execution discipline in a way that feels closer to a
-            serious trading environment.
-          </p>
-        </div>
-
-        <div className={styles.motionGrid}>
-          {motionFrames.map((frame, index) => (
-            <article className={styles.motionCard} key={frame.title}>
-              <div className={styles.motionTop}>
-                <span>{frame.tag}</span>
-                <span>00:0{index + 1}</span>
-              </div>
-              <div className={styles.motionScreen}>
-                <div className={styles.motionBars} />
-                <div className={styles.motionWave} />
-                <div className={styles.motionWaveAlt} />
-                <div className={styles.motionNoise} />
-              </div>
-              <h3>{frame.title}</h3>
-              <p>{frame.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Chart Systems</p>
-          <h2>Different chart types for different layers of trading analysis.</h2>
-          <p>
-            HFTX AI can present market information through multiple chart styles,
-            from execution-focused price views to allocation, heatmap, and signal
-            dashboards.
-          </p>
-        </div>
-
-        <div className={styles.chartGrid}>
-          {chartCards.map((card) => (
-            <article className={styles.chartCard} key={card.title}>
-              <div className={styles.motionTop}>
-                <span>{card.label}</span>
-                <span>{card.type}</span>
-              </div>
-
-              <div className={styles.chartSurface}>
-                {card.type === "candles" ? (
-                  <div className={styles.candleChart}>
-                    {Array.from({ length: 12 }).map((_, index) => (
-                      <div
-                        className={styles.candle}
-                        key={`candle-${index}`}
-                        style={
-                          {
-                            "--body-height": `${28 + ((index * 9) % 48)}px`,
-                            "--wick-height": `${68 + ((index * 11) % 70)}px`,
-                            "--offset": `${12 + ((index * 17) % 44)}px`,
-                          } as CSSProperties
-                        }
-                      />
-                    ))}
-                  </div>
-                ) : null}
-
-                {card.type === "trend" ? (
-                  <div className={styles.trendChart}>
-                    <div className={styles.trendArea} />
-                    <div className={styles.trendLine} />
-                    <div className={styles.volumeBars}>
-                      {Array.from({ length: 16 }).map((_, index) => (
-                        <span
-                          key={`bar-${index}`}
-                          style={
-                            {
-                              "--bar-height": `${16 + ((index * 13) % 64)}px`,
-                            } as CSSProperties
-                          }
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-
-                {card.type === "radial" ? (
-                  <div className={styles.radialChart}>
-                    <div className={styles.radialRing} />
-                    <div className={styles.radialCore}>
-                      <strong>76%</strong>
-                      <span>AI Conviction</span>
-                    </div>
-                  </div>
-                ) : null}
-
-                {card.type === "heatmap" ? (
-                  <div className={styles.heatmap}>
-                    {Array.from({ length: 20 }).map((_, index) => (
-                      <span
-                        className={styles.heatCell}
-                        key={`heat-${index}`}
-                        style={
-                          {
-                            "--heat-opacity": `${0.2 + ((index % 5) * 0.15)}`,
-                          } as CSSProperties
-                        }
-                      />
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={`${styles.section} ${styles.darkSection}`}>
-        <div className={styles.sectionHeading}>
-          <p className={styles.sectionEyebrow}>Core Advantage</p>
-          <h2>Why HFTX AI stands out.</h2>
-        </div>
-
-        <div className={styles.pillarGrid}>
-          {pillars.map((pillar) => (
-            <article key={pillar.title} className={styles.pillarCard}>
-              <h3>{pillar.title}</h3>
-              <p>{pillar.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className={styles.section}>
+      <section className={`${styles.section} ${styles.solutionsSection}`} id="solutions">
         <div className={styles.splitLayout}>
-          <div className={styles.sectionHeading}>
-            <p className={styles.sectionEyebrow}>Service Spectrum</p>
-            <h2>Built for traders, brands, and product teams.</h2>
+          <div className={styles.sectionHeader}>
+            <p className={styles.eyebrow}>Software Solutions</p>
+            <h2>Practical systems for trading platforms, reporting, and plugin delivery.</h2>
             <p>
-              Alongside our trading and AI stack, we support companies with
-              marketing strategy, web design, electronics-focused solutions, and
-              access to experienced software developers.
+              We build clean software experiences for teams that need trading
+              tools, operational visibility, and extensible platform components
+              without unnecessary complexity.
             </p>
           </div>
 
-          <div className={styles.featurePanel}>
-            <div>
-              <span className={styles.featureLabel}>Solutions</span>
-              <p>Trading platforms</p>
-              <p>White-label software</p>
-              <p>Market data tools</p>
-              <p>Analysis and risk systems</p>
-            </div>
-            <div>
-              <span className={styles.featureLabel}>Growth</span>
-              <p>Marketing execution</p>
-              <p>Conversion-focused websites</p>
-              <p>Developer augmentation</p>
-              <p>Electronics support</p>
-            </div>
+          <div className={styles.solutionPanel}>
+            {platformItems.map((item) => (
+              <div className={styles.solutionItem} key={item}>
+                {item}
+              </div>
+            ))}
           </div>
+        </div>
+      </section>
+
+      <section className={styles.section} id="about">
+        <div className={styles.aboutCard}>
+          <div>
+            <p className={styles.eyebrow}>About Us</p>
+            <h2>A bright, professional brand built around trust, clarity, and measurable delivery.</h2>
+          </div>
+          <p>
+            Our work spans investment services, marketing, trading support, fund
+            management, and software development for trading environments. We aim
+            to deliver reliable business value through clear communication,
+            practical execution, and solutions that are easy for clients to use
+            and grow.
+          </p>
         </div>
       </section>
 
       <section className={`${styles.section} ${styles.contactSection}`} id="contact">
-        <div className={styles.contactIntro}>
-          <p className={styles.sectionEyebrow}>Contact & Support</p>
-          <h2>Let&apos;s build your next trading or technology solution.</h2>
+        <div className={styles.sectionHeader}>
+          <p className={styles.eyebrow}>Contact</p>
+          <h2>Let&apos;s discuss your investment, trading, or platform project.</h2>
           <p>
-            Send your requirements, support query, or partnership idea. Messages
-            are routed to <a href="mailto:ceo@hftxai.com">ceo@hftxai.com</a>.
+            We support companies looking for financial services, fund management,
+            platform software, and plugins for currency and reporting workflows.
           </p>
-          <div className={styles.contactActions}>
-            <a
-              className={styles.whatsappButton}
-              href={whatsappHref}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Contact on WhatsApp
-            </a>
-            <p className={styles.contactHint}>
-              Direct WhatsApp support is connected to +44 7916 699193.
-            </p>
-          </div>
         </div>
 
-        <ContactForm whatsappHref={whatsappHref} />
+        <div className={styles.contactCard}>
+          <div>
+            <span className={styles.contactLabel}>Company</span>
+            <p>Moneyplant HK Ltd</p>
+          </div>
+          <div>
+            <span className={styles.contactLabel}>Services</span>
+            <p>Investment services, trading, fund management, software solutions</p>
+          </div>
+          <div>
+            <span className={styles.contactLabel}>Specialty</span>
+            <p>Trading platform software, currency plugins, reports plugins</p>
+          </div>
+          <a className={styles.primaryButton} href="mailto:info@moneyplant.hk">
+            info@moneyplant.hk
+          </a>
+        </div>
       </section>
     </main>
   );
