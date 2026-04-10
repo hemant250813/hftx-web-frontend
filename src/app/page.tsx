@@ -152,6 +152,15 @@ const signalCards = [
   { label: "Risk Control", value: "Break-even Moved", tone: "neutral" },
 ];
 
+const crossAssetTiles = [
+  { symbol: "XAU", move: "+1.42%", tone: "bull", note: "Gold bid" },
+  { symbol: "NQ", move: "-0.38%", tone: "bear", note: "Risk off" },
+  { symbol: "BTC", move: "+2.16%", tone: "bull", note: "Momentum" },
+  { symbol: "DXY", move: "-0.27%", tone: "neutral", note: "Dollar ease" },
+  { symbol: "WTI", move: "+0.91%", tone: "bull", note: "Oil firm" },
+  { symbol: "VIX", move: "+3.20%", tone: "bear", note: "Vol rise" },
+];
+
 export default function Home() {
   return (
     <main className={styles.page}>
@@ -469,16 +478,21 @@ export default function Home() {
 
                 {card.type === "heatmap" ? (
                   <div className={styles.heatmap}>
-                    {Array.from({ length: 20 }).map((_, index) => (
-                      <span
+                    {crossAssetTiles.map((tile, index) => (
+                      <div
                         className={styles.heatCell}
-                        key={`heat-${index}`}
+                        data-tone={tile.tone}
+                        key={tile.symbol}
                         style={
                           {
-                            "--heat-opacity": `${0.2 + ((index % 5) * 0.15)}`,
+                            "--heat-opacity": `${0.25 + ((index % 3) * 0.16)}`,
                           } as CSSProperties
                         }
-                      />
+                      >
+                        <span>{tile.symbol}</span>
+                        <strong>{tile.move}</strong>
+                        <small>{tile.note}</small>
+                      </div>
                     ))}
                   </div>
                 ) : null}

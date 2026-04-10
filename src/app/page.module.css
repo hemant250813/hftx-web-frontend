@@ -748,11 +748,49 @@
 }
 
 .heatCell {
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
+  padding: 12px;
   border-radius: 12px;
   background:
     linear-gradient(135deg, rgb(25 214 179 / var(--heat-opacity)), rgb(90 168 255 / calc(var(--heat-opacity) * 0.9)));
   border: 1px solid rgb(255 255 255 / 0.05);
   animation: heatPulse 4.6s ease-in-out infinite;
+}
+
+.heatCell span,
+.heatCell small {
+  font-family: var(--font-mono), monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heatCell span {
+  color: rgb(232 244 255 / 0.86);
+  font-size: 0.68rem;
+}
+
+.heatCell strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1rem;
+}
+
+.heatCell small {
+  color: var(--muted);
+  font-size: 0.58rem;
+}
+
+.heatCell[data-tone="bull"] strong {
+  color: #aefce1;
+}
+
+.heatCell[data-tone="bear"] strong {
+  color: #ffb4a5;
+}
+
+.heatCell[data-tone="neutral"] strong {
+  color: #ffe57d;
 }
 
 .motionScreen {
